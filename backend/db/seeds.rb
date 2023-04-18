@@ -10,3 +10,12 @@ unless TaskType.exists?
     )
   end
 end
+
+# areas
+unless Area.exists?
+  CSV.foreach('db/seeds/csv/area.csv', headers: true) do |area|
+    Area.create(
+      name: area['name']
+    )
+  end
+end
