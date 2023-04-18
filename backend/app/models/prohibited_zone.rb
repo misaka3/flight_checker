@@ -1,0 +1,2 @@
+class ProhibitedZone < ApplicationRecord
+end

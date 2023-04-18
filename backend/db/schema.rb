@@ -10,7 +10,27 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_17_152327) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_18_124454) do
+  create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "prohibited_zones", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "area_id", null: false
+    t.string "name", null: false
+    t.integer "pz_type", default: 0, null: false
+    t.float "longitude", default: 0.0, null: false
+    t.float "latitude", default: 0.0, null: false
+    t.integer "radius"
+    t.integer "altitude"
+    t.string "url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["area_id"], name: "index_prohibited_zones_on_area_id"
+  end
+
   create_table "task_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.string "short_name", null: false
@@ -19,4 +39,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_17_152327) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "prohibited_zones", "areas"
 end
