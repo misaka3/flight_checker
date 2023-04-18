@@ -19,3 +19,18 @@ unless Area.exists?
     )
   end
 end
+
+# prohibited_zones
+unless ProhibitedZone.exists?
+  CSV.foreach('db/seeds/csv/prohibited_zone.csv', headers: true) do |pz|
+    ProhibitedZone.create(
+      area_id: pz['area_id'],
+      name: pz['name'],
+      pz_type: pz['pz_type'],
+      longitude: pz['longitude'],
+      latitude: pz['latitude'],
+      radius: pz['radius'],
+      altitude: pz['altitude']
+    )
+  end
+end
