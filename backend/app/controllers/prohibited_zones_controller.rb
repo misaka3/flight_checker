@@ -24,6 +24,23 @@ class ProhibitedZonesController < ApplicationController
     end
   end
 
+  # POST /prohibited_zones/create_obj
+  def create_obj
+    blob = ActiveStorage::Blob.create_and_upload!(
+      io: params[:file].tempfile,
+      filename: params[:file].original_filename,
+      content_type: params[:file].content_type
+    )
+    @prohibited_zone = ProhibitedZone.last
+    @prohibited_zone.file.attach(blob)
+
+    if @prohibited_zone.save
+      render json: @prohibited_zone, status: :created
+    else
+      render json: @prohibited_zone.errors, status: :unprocessable_entity
+    end
+  end
+
   # PATCH/PUT /prohibited_zones/1
   def update
     if @prohibited_zone.update(prohibited_zone_params)
