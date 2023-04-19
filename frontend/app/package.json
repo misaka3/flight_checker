@@ -14,6 +14,7 @@
     "@deck.gl/react": "^8.9.7",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.0",
     "@types/mapbox-gl": "^2.7.10",
     "@types/node": "18.15.11",
@@ -28,6 +29,7 @@
     "react-dom": "18.2.0",
     "react-map-gl": "^7.0.23",
     "three": "^0.151.3",
+    "three-gltf-exporter": "^0.0.1",
     "typescript": "5.0.4"
   },
   "devDependencies": {
