@@ -56,13 +56,11 @@ class ProhibitedZonesController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
     def set_prohibited_zone
       @prohibited_zone = ProhibitedZone.find(params[:id])
     end
 
-    # Only allow a list of trusted parameters through.
     def prohibited_zone_params
-      params.fetch(:prohibited_zone, {})
+      params.require(:prohibited_zone).permit(:area_id, :name, :pz_type, :longitude, :latitude, :radius, :altitude)
     end
 end
