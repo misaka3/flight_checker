@@ -33,6 +33,7 @@ class ProhibitedZonesController < ApplicationController
     )
     @prohibited_zone = ProhibitedZone.last
     @prohibited_zone.file.attach(blob)
+    @prohibited_zone.url = url_for(blob)
 
     if @prohibited_zone.save
       render json: @prohibited_zone, status: :created
