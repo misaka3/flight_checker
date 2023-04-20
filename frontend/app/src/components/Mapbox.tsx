@@ -6,17 +6,17 @@ import { ColumnLayer } from '@deck.gl/layers/typed';
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
 interface MapboxProps {
-  longitude: number;
-  latitude: number;
-  radius: number;
-  altitude: number;
-  color: [number, number, number, number];
+  objects: Array<{
+    coordinates: [number, number];
+    radius: number;
+    altitude: number;
+  }>;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ longitude, latitude, radius, altitude, color }) => {
+const Mapbox: React.FC<MapboxProps> = ({ objects }) => {
   const initialViewState = {
-    longitude,
-    latitude,
+    longitude: objects[0].coordinates[0],
+    latitude: objects[0].coordinates[1],
     zoom: 14,
     pitch: 45,
     bearing: 0,
@@ -26,17 +26,12 @@ const Mapbox: React.FC<MapboxProps> = ({ longitude, latitude, radius, altitude, 
 
   const layers = [
     new ColumnLayer({
-      id: "column-layer",
-      data: [
-        {
-          coordinates: [longitude, latitude],
-          height: altitude
-        },
-      ],
+      id: 'column-layer',
+      data: objects,
       getPosition: (d) => d.coordinates,
-      getFillColor: color,
-      getRadius: radius,
-      getHeight: (d) => d.height,
+      getFillColor: [255, 0, 0, 255],
+      getRadius: (d) => d.radius,
+      getHeight: (d) => d.altitude,
       pickable: true,
     }),
   ];
