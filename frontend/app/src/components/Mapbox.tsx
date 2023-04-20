@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import ReactMap from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
-import { Tile3DLayer } from "@deck.gl/geo-layers/typed";
-import { ScenegraphLayer } from "@deck.gl/mesh-layers/typed";
-
+import { ColumnLayer } from '@deck.gl/layers/typed';
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
@@ -12,10 +10,10 @@ interface MapboxProps {
   latitude: number;
   radius: number;
   altitude: number;
-  url: string;
+  color: [number, number, number, number];
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ longitude, latitude, radius, altitude, url }) => {
+const Mapbox: React.FC<MapboxProps> = ({ longitude, latitude, radius, altitude, color }) => {
   const initialViewState = {
     longitude,
     latitude,
@@ -24,45 +22,36 @@ const Mapbox: React.FC<MapboxProps> = ({ longitude, latitude, radius, altitude, 
     bearing: 0,
   };
 
-  const [viewState, setViewState] = useState({
-    ...initialViewState,
-    activeViewports: { default: initialViewState },
-  });
+  const [viewState, setViewState] = useState(initialViewState);
 
   const layers = [
-    // ...既存のレイヤー定義
-    new ScenegraphLayer({
-      id: "scenegraph-layer",
+    new ColumnLayer({
+      id: "column-layer",
       data: [
         {
-          position: [longitude, latitude],
-          url,
+          coordinates: [longitude, latitude],
+          height: altitude
         },
       ],
-      getPosition: (d) => d.position,
-      scenegraph: (d) => d.url,
-      sizeScale: 10,
-      getMaterial: (d) => ({
-        ...d.material,
-        diffuse: [1, 0, 0]
-      })
-    })
+      getPosition: (d) => d.coordinates,
+      getFillColor: color,
+      getRadius: radius,
+      getHeight: (d) => d.height,
+      pickable: true,
+    }),
   ];
 
   return (
-    <DeckGL
-      layers={layers}
-      initialViewState={initialViewState}
-      controller={true}
-      onViewStateChange={({ viewState }) =>
-        setViewState((prevViewState) => ({
-          ...viewState,
-          activeViewports: { ...prevViewState.activeViewports, default: viewState },
-        }))
-      }
-    >
-      <ReactMap mapboxAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle="mapbox://styles/mapbox/streets-v11" />
-    </DeckGL>
+    <div>
+      <DeckGL
+        layers={layers}
+        initialViewState={initialViewState}
+        controller={true}
+        onViewStateChange={({ viewState }) => setViewState(viewState)}
+      >
+        <ReactMap mapboxAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle="mapbox://styles/mapbox/streets-v11" />
+      </DeckGL>
+    </div>
   );
 };
 
