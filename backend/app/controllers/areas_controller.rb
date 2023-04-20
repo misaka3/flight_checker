@@ -10,7 +10,7 @@ class AreasController < ApplicationController
 
   # GET /areas/1
   def show
-    render json: @area, include: { prohibited_zones: { methods: :file_blob } }
+    render json: @area, include: :prohibited_zones
   end
 
   # POST /areas

@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@deck.gl/core": "^8.9.7",
+    "@deck.gl/extensions": "^8.9.7",
+    "@deck.gl/geo-layers": "^8.9.7",
     "@deck.gl/layers": "^8.9.7",
     "@deck.gl/react": "^8.9.7",
     "@emotion/react": "^11.10.6",
