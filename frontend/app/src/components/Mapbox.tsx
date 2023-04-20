@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import ReactMap from "react-map-gl";
+import ReactMap, {AttributionControl} from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
 import { ColumnLayer } from '@deck.gl/layers/typed';
 
@@ -49,7 +49,11 @@ const Mapbox: React.FC<MapboxProps> = ({ longitude, latitude, radius, altitude, 
         controller={true}
         onViewStateChange={({ viewState }) => setViewState(viewState)}
       >
-        <ReactMap mapboxAccessToken={MAPBOX_ACCESS_TOKEN} mapStyle="mapbox://styles/mapbox/streets-v11" />
+        <ReactMap
+          mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
+          mapStyle="mapbox://styles/mapbox/streets-v11"
+          attributionControl={false}
+        />
       </DeckGL>
     </div>
   );
