@@ -46,7 +46,7 @@ const Areas = () => {
         </TableHead>
         <TableBody>
           {areas.map((area) => (
-            <TableRow key={area.id} hover onClick={() => handleRowClick(area.id)}>
+            <TableRow key={area.id} hover onClick={() => handleRowClick(area.id)} style={{ cursor: "pointer" }}>
               <TableCell>{area.id}</TableCell>
               <TableCell>{area.name}</TableCell>
               <TableCell>
