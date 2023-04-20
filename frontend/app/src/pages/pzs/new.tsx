@@ -7,7 +7,6 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
-
 const NewPz: React.FC = () => {
   const [latitude, setLatitude] = useState("0");
   const [longitude, setLongitude] = useState("0");
@@ -32,10 +31,10 @@ const NewPz: React.FC = () => {
         area_id: 2,
         name: "test",
         pz_type: 0,
-        latitude: parseInt(latitude, 10),
-        longitude: parseInt(longitude, 10),
-        radius: parseInt(radius, 10),
-        altitude: parseInt(altitude, 10),
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+        radius: parseFloat(radius),
+        altitude: parseFloat(altitude),
       });
       console.log("response");
       console.log(response);

@@ -49,8 +49,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_18_130838) do
     t.bigint "area_id", null: false
     t.string "name", null: false
     t.integer "pz_type", default: 0, null: false
-    t.float "longitude", default: 0.0, null: false
-    t.float "latitude", default: 0.0, null: false
+    t.decimal "longitude", precision: 9, scale: 6
+    t.decimal "latitude", precision: 9, scale: 6
     t.integer "radius"
     t.integer "altitude"
     t.string "url"
