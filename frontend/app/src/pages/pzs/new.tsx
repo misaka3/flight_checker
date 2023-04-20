@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import * as THREE from "three";
-import { GLTFExporter } from "three/examples/jsm/exporters/GLTFExporter";
 import axios from "../../../lib/axiosInstance";
 import { TextField, Button, Box, Grid, Alert, Snackbar } from "@mui/material";
 
@@ -19,7 +17,7 @@ const NewPz: React.FC = () => {
   };
 
   const btnClick = async (event: React.FormEvent) => {
-    event.preventDefault(); // ページリロードを防ぐ
+    event.preventDefault();
   
     const result = await createPz();
   
@@ -59,49 +57,6 @@ const NewPz: React.FC = () => {
       console.error('Failed request API. ', error);
       return false;
     }
-  };
-  
-
-  // const exportCylinder = () => {
-  const exportCylinder = async () => {
-    // Create a cylindrical 3D object
-    const geometry = new THREE.CylinderGeometry(parseInt(radius, 10), parseInt(radius, 10), parseInt(altitude, 10), 32);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xff0000,
-      transparent: true,
-      opacity: 0.4,
-    });
-    const cylinder = new THREE.Mesh(geometry, material);
-
-    // Export the 3D object in GLTF format and send it to the server
-    const exporter = new GLTFExporter();
-    const filename = 'pz.gltf';
-    exporter.parse(
-      cylinder,
-      (gltf) => {
-        const blob = new Blob([JSON.stringify(gltf)], { type: "model/gltf+json" });
-        const formData = new FormData();
-        formData.append("file", blob, filename);
-        console.log('formData')
-        console.log(formData)
-        axios
-          .post("/prohibited_zones/create_obj", formData, {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((response) => {
-            console.log(response);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      },
-      (progress) => {
-        console.log("Export progress:", progress);
-      }
-    );
-    
   };
 
   return (
