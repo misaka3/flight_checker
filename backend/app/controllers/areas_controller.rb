@@ -11,7 +11,7 @@ class AreasController < ApplicationController
   # GET /areas/1
   def show
     render json: @area, include: :prohibited_zones
-  end  
+  end
 
   # POST /areas
   def create
