@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import ReactMap, {AttributionControl} from "react-map-gl";
+import ReactMap, { AttributionControl } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
-import { ColumnLayer } from '@deck.gl/layers/typed';
+import { ColumnLayer } from "@deck.gl/layers/typed";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
@@ -20,13 +20,13 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     zoom: 14,
     pitch: 45,
     bearing: 0,
-  };  
+  };
 
   const [viewState, setViewState] = useState(initialViewState);
 
   const layers = [
     new ColumnLayer({
-      id: 'column-layer',
+      id: "column-layer",
       data: objects,
       getPosition: (d) => d.coordinates,
       getFillColor: [255, 0, 0, 255],
@@ -36,13 +36,19 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     }),
   ];
 
+  // This function will be called every time the map's viewState changes
+  const handleViewStateChange = ({ viewState }) => {
+    setViewState(viewState);
+    console.log("Center coordinates:", viewState.longitude, viewState.latitude);
+  };
+
   return (
     <div>
       <DeckGL
         layers={layers}
         initialViewState={initialViewState}
         controller={true}
-        onViewStateChange={({ viewState }) => setViewState(viewState)}
+        onViewStateChange={handleViewStateChange}
       >
         <ReactMap
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
