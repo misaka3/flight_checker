@@ -20,18 +20,19 @@ const AreaEdit: React.FC = () => {
   const getAreaData = async () => {
     try {
       const response = await axios.get(`/areas/${id}`);
-      console.log('response.data');
-      console.log(response.data.prohibited_zones);
-      let pz_array = []
-      response.data.prohibited_zones.forEach((pz) => {
-        pz_array.push({
-          coordinates: [parseFloat(pz.longitude), parseFloat(pz.latitude)],
-          radius: pz.radius,
-          altitude: pz.altitude
-        })
-      })
       setArea(response.data);
-      setPzs(pz_array);
+
+      let pz_array = []
+      if (response.data.prohibited_zones) {
+        response.data.prohibited_zones.forEach((pz) => {
+          pz_array.push({
+            coordinates: [parseFloat(pz.longitude), parseFloat(pz.latitude)],
+            radius: pz.radius,
+            altitude: pz.altitude
+          })
+        })
+        setPzs(pz_array);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -51,8 +52,6 @@ const AreaEdit: React.FC = () => {
   return (
     <div>
       <Box mb={4}>
-        {/* <TextField label="エリアID" value={area.id} InputProps={{ readOnly: true }} />
-        <TextField label="エリア名" value={area.name} InputProps={{ readOnly: true }} /> */}
         <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', color: 'darkgray' }}>
           {area.name}エリア
         </Typography>
@@ -73,6 +72,44 @@ const AreaEdit: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
+              {area.prohibited_zones.length > 0 ? (
+                area.prohibited_zones.map((pz) => (
+                  <TableRow
+                    key={pz.id}
+                    hover
+                    onClick={() => router.push(`/pzs/${pz.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    <TableCell>{pz.id}</TableCell>
+                    <TableCell>{pz.name}</TableCell>
+                    <TableCell>{pz.pz_type}</TableCell>
+                    <TableCell>{pz.latitude}</TableCell>
+                    <TableCell>{pz.longitude}</TableCell>
+                    <TableCell>{pz.radius}</TableCell>
+                    <TableCell>{pz.altitude}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        edge="end"
+                        color="error"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(pz.id);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={7} align="center">
+                    PZが登録されていません
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+            {/* <TableBody>
               {area.prohibited_zones.map((pz) => (
                 <TableRow
                   key={pz.id}
@@ -101,7 +138,7 @@ const AreaEdit: React.FC = () => {
                   </TableCell>
                 </TableRow>
               ))}
-            </TableBody>
+            </TableBody> */}
           </Table>
         </TableContainer>
       </Box>

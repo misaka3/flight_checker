@@ -13,14 +13,14 @@ interface MapboxProps {
   }>;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ objects }) => {
+const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
   const initialViewState = {
-    longitude: objects[0].coordinates[0],
-    latitude: objects[0].coordinates[1],
+    longitude: objects.length > 0 ? objects[0].coordinates[0] : 130.300,
+    latitude: objects.length > 0 ? objects[0].coordinates[1] : 33.265,
     zoom: 14,
     pitch: 45,
     bearing: 0,
-  };
+  };  
 
   const [viewState, setViewState] = useState(initialViewState);
 
