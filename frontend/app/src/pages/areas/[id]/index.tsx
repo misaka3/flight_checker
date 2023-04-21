@@ -109,36 +109,6 @@ const AreaEdit: React.FC = () => {
                 </TableRow>
               )}
             </TableBody>
-            {/* <TableBody>
-              {area.prohibited_zones.map((pz) => (
-                <TableRow
-                  key={pz.id}
-                  hover
-                  onClick={() => router.push(`/pzs/${pz.id}`)}
-                  style={{ cursor: "pointer" }}
-                >
-                  <TableCell>{pz.id}</TableCell>
-                  <TableCell>{pz.name}</TableCell>
-                  <TableCell>{pz.pz_type}</TableCell>
-                  <TableCell>{pz.latitude}</TableCell>
-                  <TableCell>{pz.longitude}</TableCell>
-                  <TableCell>{pz.radius}</TableCell>
-                  <TableCell>{pz.altitude}</TableCell>
-                  <TableCell>
-                    <IconButton
-                      edge="end"
-                      color="error"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(pz.id);
-                      }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody> */}
           </Table>
         </TableContainer>
       </Box>
