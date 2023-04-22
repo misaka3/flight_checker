@@ -1,21 +1,45 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import axios from "../../../../lib/axiosInstance";
-import { Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid } from "@mui/material";
+import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
 
 const AreaEdit: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
+  const { alert } = router.query;
   const [area, setArea] = useState(null);
   const [pzs, setPzs] = useState(null);
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor | null>(null);
+
+  const showAlert = (severity: AlertColor) => {
+    setAlertSeverity(severity);
+    setAlertOpen(true);
+  
+    setTimeout(() => {
+      setAlertOpen(false);
+    }, 3000);
+  };
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
 
   useEffect(() => {
     if (id) {
       getAreaData();
     }
   }, [id]);
+
+  useEffect(() => {
+    console.log('alert1');
+    console.log(alert);
+    if (alert) {
+      showAlert(alert as AlertColor);
+    }
+  }, [alert]);
 
   const getAreaData = async () => {
     try {
@@ -137,6 +161,20 @@ const AreaEdit: React.FC = () => {
           </Button>
         </Grid>
       </Grid>
+      {alertSeverity && (
+        <Snackbar
+          open={alertOpen}
+          autoHideDuration={3000}
+          onClose={handleCloseAlert}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert onClose={handleCloseAlert} severity={alertSeverity}>
+            {alertSeverity === "info"
+              ? "Pz was successfully created."
+              : "Failed to create Pz."}
+          </Alert>
+        </Snackbar>
+      )}
     </div>
   );
 };

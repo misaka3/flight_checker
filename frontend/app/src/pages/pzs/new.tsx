@@ -1,23 +1,17 @@
 import React, { useState } from "react";
 import axios from "../../../lib/axiosInstance";
-import { TextField, Button, Box, Grid, Alert, Snackbar } from "@mui/material";
+import { TextField, Button, Box, Grid, FormControlLabel, Switch } from "@mui/material";
 import { useRouter } from 'next/router';
 
 const NewPz: React.FC = () => {
   const router = useRouter();
   const areaId = router.query.area_id;
   // Pz Data
+  const [name, setName] = useState("PZ1");
   const [latitude, setLatitude] = useState("0");
   const [longitude, setLongitude] = useState("0");
   const [radius, setRadius] = useState("0");
   const [altitude, setAltitude] = useState("0");
-  // Basic Alerts
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState("info");
-
-  const handleCloseAlert = () => {
-    setAlertOpen(false);
-  };
 
   const btnClick = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -25,24 +19,17 @@ const NewPz: React.FC = () => {
     const result = await createPz();
   
     if (result) {
-      setAlertSeverity("info");
+      router.push(`/areas/${areaId}?alert=info`);
     } else {
-      setAlertSeverity("error");
+      router.push(`/areas/${areaId}?alert=error`);
     }
-    // アラートを表示する
-    setAlertOpen(true);
-
-    // アラートを3秒後に自動的に閉じる
-    setTimeout(() => {
-      setAlertOpen(false);
-    }, 3000);
   };
 
   const createPz = async (): Promise<boolean> => {
     try {
       const response = await axios.post('/prohibited_zones', {
         area_id: areaId,
-        name: "test",
+        name: name,
         pz_type: 0,
         latitude: parseFloat(latitude),
         longitude: parseFloat(longitude),
@@ -64,9 +51,21 @@ const NewPz: React.FC = () => {
 
   return (
     <div>
+      <Box component="div" sx={{ mb: 4 }}>
+        <FormControlLabel control={<Switch defaultChecked />} label="Label" />
+      </Box>
       <Box component="div">
         <form onSubmit={btnClick}>
           <Grid container spacing={2}>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                label="Pz名"
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                fullWidth
+              />
+            </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="緯度"
@@ -104,7 +103,7 @@ const NewPz: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Box display="flex" justifyContent="space-between">
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button
                   variant="outlined"
                   style={{ color: "white", backgroundColor: "#b8b8b8", border: "none", borderRadius: 20 }}
@@ -112,7 +111,11 @@ const NewPz: React.FC = () => {
                 >
                   戻る
                 </Button>
-                <Button variant="contained" type="submit">
+                <Button 
+                  variant="contained"
+                  type="submit"
+                  onClick={() => router.push(`/areas/${areaId}`)}
+                >
                   登録
                 </Button>
               </Box>
@@ -120,18 +123,6 @@ const NewPz: React.FC = () => {
           </Grid>
         </form>
       </Box>
-      <Snackbar
-        open={alertOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseAlert} severity={alertSeverity}>
-          {alertSeverity === "info"
-            ? "Pz was successfully created."
-            : "Failed to create Pz."}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
