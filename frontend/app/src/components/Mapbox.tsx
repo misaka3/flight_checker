@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import ReactMap, { AttributionControl } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
 import { ColumnLayer } from "@deck.gl/layers/typed";
+import { latLonToMGRS } from '../utils/coordinateUtils';
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
@@ -21,6 +22,10 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     pitch: 45,
     bearing: 0,
   };
+
+  const mgrsString = latLonToMGRS(initialViewState.latitude, initialViewState.longitude);
+  console.log('mgrsString');
+  console.log(mgrsString);
 
   const [viewState, setViewState] = useState(initialViewState);
 
