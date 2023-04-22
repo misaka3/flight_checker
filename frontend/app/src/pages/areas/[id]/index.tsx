@@ -1,16 +1,39 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/router";
 import axios from "../../../../lib/axiosInstance";
 import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
 
+interface Area {
+  id: number;
+  name: string;
+  prohibited_zones: PzObject[];
+}
+interface PzArrayObject {
+  coordinates: [number, number];
+  radius: number;
+  altitude: number;
+}
+
+interface PzObject {
+  id: number;
+  area_id: number;
+  name: string;
+  pz_type: number;
+  longitude: string;
+  latitude: string;
+  radius: number;
+  altitude: number;
+  url: string;
+}
+
 const AreaEdit: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
   const { alert } = router.query;
-  const [area, setArea] = useState(null);
-  const [pzs, setPzs] = useState(null);
+  const [area, setArea] = useState<Area>();
+  const [pzs, setPzs] = useState([] as PzArrayObject[]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor | null>(null);
 
@@ -28,12 +51,6 @@ const AreaEdit: React.FC = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      getAreaData();
-    }
-  }, [id]);
-
-  useEffect(() => {
     console.log('alert1');
     console.log(alert);
     if (alert) {
@@ -41,14 +58,14 @@ const AreaEdit: React.FC = () => {
     }
   }, [alert]);
 
-  const getAreaData = async () => {
+  const getAreaData = useCallback(async () => {
     try {
       const response = await axios.get(`/areas/${id}`);
       setArea(response.data);
 
-      let pz_array = []
+      let pz_array: PzArrayObject[] = []
       if (response.data.prohibited_zones) {
-        response.data.prohibited_zones.forEach((pz) => {
+        response.data.prohibited_zones.forEach((pz: PzObject) => {
           pz_array.push({
             coordinates: [parseFloat(pz.longitude), parseFloat(pz.latitude)],
             radius: pz.radius,
@@ -60,7 +77,11 @@ const AreaEdit: React.FC = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    getAreaData();
+  }, [getAreaData]);
 
   const handleDelete = async (pzId: number) => {
     try {
@@ -108,7 +129,7 @@ const AreaEdit: React.FC = () => {
             </TableHead>
             <TableBody>
               {area.prohibited_zones.length > 0 ? (
-                area.prohibited_zones.map((pz) => (
+                area.prohibited_zones.map((pz: PzObject) => (
                   <TableRow
                     key={pz.id}
                     hover
