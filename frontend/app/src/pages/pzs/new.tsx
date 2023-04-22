@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "../../../lib/axiosInstance";
 import { TextField, Button, Box, Grid, Alert, Snackbar } from "@mui/material";
+import { useRouter } from 'next/router';
 
 const NewPz: React.FC = () => {
+  const router = useRouter();
+  const areaId = router.query.area_id;
   // Pz Data
   const [latitude, setLatitude] = useState("0");
   const [longitude, setLongitude] = useState("0");
@@ -38,7 +41,7 @@ const NewPz: React.FC = () => {
   const createPz = async (): Promise<boolean> => {
     try {
       const response = await axios.post('/prohibited_zones', {
-        area_id: 2,
+        area_id: areaId,
         name: "test",
         pz_type: 0,
         latitude: parseFloat(latitude),
@@ -101,7 +104,14 @@ const NewPz: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Box display="flex" justifyContent="flex-end">
+              <Box display="flex" justifyContent="space-between">
+                <Button
+                  variant="outlined"
+                  style={{ color: "white", backgroundColor: "#b8b8b8", border: "none", borderRadius: 20 }}
+                  onClick={() => router.push(`/areas/${areaId}`)}
+                >
+                  戻る
+                </Button>
                 <Button variant="contained" type="submit">
                   登録
                 </Button>

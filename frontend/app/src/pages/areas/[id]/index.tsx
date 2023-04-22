@@ -56,6 +56,17 @@ const AreaEdit: React.FC = () => {
           {area.name}エリア
         </Typography>
       </Box>
+      <Grid container justifyContent="flex-end" mb={4}>
+        <Grid item>
+          <Button
+            variant="contained"
+            style={{ borderRadius: 20 }}
+            onClick={() => router.push(`/pzs/new?area_id=${id}`)}
+          >
+            PZ登録
+          </Button>
+        </Grid>
+      </Grid>
       <Box mb={4}>
         <TableContainer component={Paper}>
           <Table>
