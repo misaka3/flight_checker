@@ -15,6 +15,12 @@ class ProhibitedZonesController < ApplicationController
 
   # POST /prohibited_zones
   def create
+    if params[:grid_type]
+      params[:prohibited_zone][:latitude] = 0
+      params[:prohibited_zone][:longitude] = 0
+    else
+      params[:prohibited_zone][:utm_coordinates] = ''
+    end
     @prohibited_zone = ProhibitedZone.new(prohibited_zone_params)
 
     if @prohibited_zone.save
@@ -44,6 +50,6 @@ class ProhibitedZonesController < ApplicationController
     end
 
     def prohibited_zone_params
-      params.require(:prohibited_zone).permit(:area_id, :name, :pz_type, :longitude, :latitude, :radius, :altitude)
+      params.require(:prohibited_zone).permit(:area_id, :name, :pz_type, :grid_type, :longitude, :latitude, :radius, :altitude, :utm_coordinates)
     end
 end

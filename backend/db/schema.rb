@@ -21,11 +21,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_18_124454) do
     t.bigint "area_id", null: false
     t.string "name", null: false
     t.integer "pz_type", default: 0, null: false
+    t.boolean "grid_type", default: false, null: false
     t.decimal "longitude", precision: 9, scale: 6
     t.decimal "latitude", precision: 9, scale: 6
+    t.string "utm_coordinates"
     t.integer "radius"
     t.integer "altitude"
-    t.string "url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["area_id"], name: "index_prohibited_zones_on_area_id"

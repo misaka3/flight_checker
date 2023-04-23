@@ -10,8 +10,14 @@ const NewPz: React.FC = () => {
   const [name, setName] = useState("PZ1");
   const [latitude, setLatitude] = useState("0");
   const [longitude, setLongitude] = useState("0");
+  const [utmCoordinates, setUtmCoordinates] = useState("0");
   const [radius, setRadius] = useState("0");
   const [altitude, setAltitude] = useState("0");
+  const [utmEnabled, setUtmEnabled] = useState(false);
+
+  const handleSwitchChange = (event: any) => {
+    setUtmEnabled(event.target.checked);
+  };
 
   const btnClick = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -31,8 +37,10 @@ const NewPz: React.FC = () => {
         area_id: areaId,
         name: name,
         pz_type: 0,
-        latitude: parseFloat(latitude),
+        grid_type: utmEnabled,
+        latitude: latitude,
         longitude: parseFloat(longitude),
+        utm_coordinates: utmCoordinates,
         radius: parseFloat(radius),
         altitude: parseFloat(altitude),
       });
@@ -52,38 +60,62 @@ const NewPz: React.FC = () => {
   return (
     <div>
       <Box component="div" sx={{ mb: 4 }}>
-        <FormControlLabel control={<Switch defaultChecked />} label="Label" />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={utmEnabled}
+              onChange={handleSwitchChange}
+            />
+          }
+          label="UTM座標"
+        />
       </Box>
       <Box component="div">
         <form onSubmit={btnClick}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={12}>
-              <TextField
-                label="Pz名"
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="緯度"
-                type="number"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="経度"
-                type="number"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                fullWidth
-              />
-            </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  label="Pz名"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+            {!utmEnabled ? (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="緯度"
+                    type="number"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="経度"
+                    type="number"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={12} sm={12}>
+                  <TextField
+                    label="UTM座標"
+                    type="text"
+                    value={utmCoordinates}
+                    onChange={(e) => setUtmCoordinates(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+              </>
+            )}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="半径(m)"
