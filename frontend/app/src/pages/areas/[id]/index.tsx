@@ -4,6 +4,7 @@ import axios from "../../../../lib/axiosInstance";
 import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
+import { mgrsToLatLon } from "utils/coordinateUtils";
 
 interface Area {
   id: number;
@@ -21,8 +22,10 @@ interface PzObject {
   area_id: number;
   name: string;
   pz_type: number;
+  grid_type: boolean;
   longitude: string;
   latitude: string;
+  utm_coordinates: string;
   radius: number;
   altitude: number;
   url: string;
@@ -119,9 +122,9 @@ const AreaEdit: React.FC = () => {
               <TableRow>
                 <TableCell>ID</TableCell>
                 <TableCell>PZ名</TableCell>
-                <TableCell>PZタイプ</TableCell>
-                <TableCell>緯度</TableCell>
-                <TableCell>経度</TableCell>
+                {/* <TableCell>PZタイプ</TableCell> */}
+                <TableCell>座標タイプ</TableCell>
+                <TableCell>座標</TableCell>
                 <TableCell>半径</TableCell>
                 <TableCell>高さ</TableCell>
                 <TableCell></TableCell>
@@ -138,9 +141,13 @@ const AreaEdit: React.FC = () => {
                   >
                     <TableCell>{pz.id}</TableCell>
                     <TableCell>{pz.name}</TableCell>
-                    <TableCell>{pz.pz_type}</TableCell>
-                    <TableCell>{pz.latitude}</TableCell>
-                    <TableCell>{pz.longitude}</TableCell>
+                    {/* <TableCell>{pz.pz_type}</TableCell> */}
+                    <TableCell>{pz.grid_type ? 'UTM' : 'WGS84'}</TableCell>
+                    {pz.grid_type ? (
+                      <TableCell>{pz.utm_coordinates}</TableCell>
+                    ) : (
+                      <TableCell>{pz.longitude}, {pz.latitude}</TableCell>
+                    )}
                     <TableCell>{pz.radius}</TableCell>
                     <TableCell>{pz.altitude}</TableCell>
                     <TableCell>

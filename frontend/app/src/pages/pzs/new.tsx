@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "../../../lib/axiosInstance";
 import { TextField, Button, Box, Grid, FormControlLabel, Switch } from "@mui/material";
 import { useRouter } from 'next/router';
+import { mgrsToLatLon } from "utils/coordinateUtils";
 
 const NewPz: React.FC = () => {
   const router = useRouter();
@@ -32,14 +33,23 @@ const NewPz: React.FC = () => {
   };
 
   const createPz = async (): Promise<boolean> => {
-    try {
+    let currentLatitude = latitude;
+    let currentLongitude = longitude;
+
+    if (utmEnabled) {
+      const latlon = mgrsToLatLon(utmCoordinates);
+      currentLatitude = latlon[0].toString();
+      currentLongitude = latlon[1].toString();
+    }
+
+    try { 
       const response = await axios.post('/prohibited_zones', {
         area_id: areaId,
         name: name,
         pz_type: 0,
         grid_type: utmEnabled,
-        latitude: latitude,
-        longitude: parseFloat(longitude),
+        latitude: parseFloat(currentLatitude),
+        longitude: parseFloat(currentLongitude),
         utm_coordinates: utmCoordinates,
         radius: parseFloat(radius),
         altitude: parseFloat(altitude),
