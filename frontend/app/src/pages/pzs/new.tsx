@@ -1,19 +1,23 @@
 import React, { useState } from "react";
 import axios from "../../../lib/axiosInstance";
-import { TextField, Button, Box, Grid, Alert, Snackbar } from "@mui/material";
+import { TextField, Button, Box, Grid, FormControlLabel, Switch } from "@mui/material";
+import { useRouter } from 'next/router';
+import { mgrsToLatLon } from "utils/coordinateUtils";
 
 const NewPz: React.FC = () => {
+  const router = useRouter();
+  const areaId = router.query.area_id;
   // Pz Data
+  const [name, setName] = useState("PZ1");
   const [latitude, setLatitude] = useState("0");
   const [longitude, setLongitude] = useState("0");
+  const [utmCoordinates, setUtmCoordinates] = useState("0");
   const [radius, setRadius] = useState("0");
   const [altitude, setAltitude] = useState("0");
-  // Basic Alerts
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState("info");
+  const [utmEnabled, setUtmEnabled] = useState(false);
 
-  const handleCloseAlert = () => {
-    setAlertOpen(false);
+  const handleSwitchChange = (event: any) => {
+    setUtmEnabled(event.target.checked);
   };
 
   const btnClick = async (event: React.FormEvent) => {
@@ -22,27 +26,31 @@ const NewPz: React.FC = () => {
     const result = await createPz();
   
     if (result) {
-      setAlertSeverity("info");
+      router.push(`/areas/${areaId}?alert=info`);
     } else {
-      setAlertSeverity("error");
+      router.push(`/areas/${areaId}?alert=error`);
     }
-    // アラートを表示する
-    setAlertOpen(true);
-
-    // アラートを3秒後に自動的に閉じる
-    setTimeout(() => {
-      setAlertOpen(false);
-    }, 3000);
   };
 
   const createPz = async (): Promise<boolean> => {
-    try {
+    let currentLatitude = latitude;
+    let currentLongitude = longitude;
+
+    if (utmEnabled) {
+      const latlon = mgrsToLatLon(utmCoordinates);
+      currentLatitude = latlon[0].toString();
+      currentLongitude = latlon[1].toString();
+    }
+
+    try { 
       const response = await axios.post('/prohibited_zones', {
-        area_id: 2,
-        name: "test",
+        area_id: areaId,
+        name: name,
         pz_type: 0,
-        latitude: parseFloat(latitude),
-        longitude: parseFloat(longitude),
+        grid_type: utmEnabled,
+        latitude: parseFloat(currentLatitude),
+        longitude: parseFloat(currentLongitude),
+        utm_coordinates: utmCoordinates,
         radius: parseFloat(radius),
         altitude: parseFloat(altitude),
       });
@@ -61,27 +69,63 @@ const NewPz: React.FC = () => {
 
   return (
     <div>
+      <Box component="div" sx={{ mb: 4 }}>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={utmEnabled}
+              onChange={handleSwitchChange}
+            />
+          }
+          label="UTM座標"
+        />
+      </Box>
       <Box component="div">
         <form onSubmit={btnClick}>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="緯度"
-                type="number"
-                value={latitude}
-                onChange={(e) => setLatitude(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="経度"
-                type="number"
-                value={longitude}
-                onChange={(e) => setLongitude(e.target.value)}
-                fullWidth
-              />
-            </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  label="Pz名"
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  fullWidth
+                />
+              </Grid>
+            {!utmEnabled ? (
+              <>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="緯度"
+                    type="number"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="経度"
+                    type="number"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+              </>
+            ) : (
+              <>
+                <Grid item xs={12} sm={12}>
+                  <TextField
+                    label="UTM座標"
+                    type="text"
+                    value={utmCoordinates}
+                    onChange={(e) => setUtmCoordinates(e.target.value)}
+                    fullWidth
+                  />
+                </Grid>
+              </>
+            )}
             <Grid item xs={12} sm={6}>
               <TextField
                 label="半径(m)"
@@ -101,8 +145,19 @@ const NewPz: React.FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Box display="flex" justifyContent="flex-end">
-                <Button variant="contained" type="submit">
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Button
+                  variant="outlined"
+                  style={{ color: "white", backgroundColor: "#b8b8b8", border: "none", borderRadius: 20 }}
+                  onClick={() => router.push(`/areas/${areaId}`)}
+                >
+                  戻る
+                </Button>
+                <Button 
+                  variant="contained"
+                  type="submit"
+                  onClick={() => router.push(`/areas/${areaId}`)}
+                >
                   登録
                 </Button>
               </Box>
@@ -110,18 +165,6 @@ const NewPz: React.FC = () => {
           </Grid>
         </form>
       </Box>
-      <Snackbar
-        open={alertOpen}
-        autoHideDuration={3000}
-        onClose={handleCloseAlert}
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      >
-        <Alert onClose={handleCloseAlert} severity={alertSeverity}>
-          {alertSeverity === "info"
-            ? "Pz was successfully created."
-            : "Failed to create Pz."}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
