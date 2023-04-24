@@ -54,8 +54,6 @@ const AreaEdit: React.FC = () => {
   };
 
   useEffect(() => {
-    console.log('alert1');
-    console.log(alert);
     if (alert) {
       showAlert(alert as AlertColor);
     }
