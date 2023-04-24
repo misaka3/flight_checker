@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactMap, { AttributionControl, ViewState } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
 import { ColumnLayer } from "@deck.gl/layers/typed";
@@ -32,11 +32,14 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     bearing: 0,
   };
 
-  const mgrsString = latLonToMGRS(initialViewState.latitude, initialViewState.longitude);
-  console.log('mgrsString');
-  console.log(mgrsString);
 
   const [viewState, setViewState] = useState<ViewStateType>(initialViewState);
+
+  useEffect(() => {
+    const mgrsString = latLonToMGRS(viewState.latitude, viewState.longitude);
+    console.log('mgrsString');
+    console.log(mgrsString);
+  }, [viewState]);
 
   const layers = objects.length > 0 ? [
     new ColumnLayer({
@@ -50,9 +53,9 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     }),
   ] : [];
 
-  const handleViewStateChange = ({ viewState }: {viewState: ViewStateType}) => {
-    setViewState(viewState);
-    console.log("Center coordinates:", viewState.longitude, viewState.latitude);
+  const handleViewportChange = (viewport: ViewStateType) => {
+    setViewState(viewport);
+    console.log("Center coordinates:", viewport.longitude, viewport.latitude);
   };
 
   return (
@@ -62,9 +65,10 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
           layers={layers}
           initialViewState={initialViewState}
           controller={true}
-          onViewStateChange={handleViewStateChange}
+          onViewStateChange={handleViewportChange}
         >
           <ReactMap
+            {...viewState}
             mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
             mapStyle="mapbox://styles/mapbox/streets-v11"
             attributionControl={false}
@@ -72,10 +76,11 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
         </DeckGL>
       ) : (
         <ReactMap
-          initialViewState={initialViewState}
+          {...viewState}
           mapboxAccessToken={MAPBOX_ACCESS_TOKEN}
           mapStyle="mapbox://styles/mapbox/streets-v11"
           attributionControl={false}
+          onMove={evt => setViewState(evt.viewState)}
         />
       )}
     </div>
