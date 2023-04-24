@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import ReactMap, { AttributionControl, ViewState } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
 import { ColumnLayer } from "@deck.gl/layers/typed";
-import { latLonToMGRS } from '../utils/coordinateUtils';
-import { Box, Grid, TextField } from "@mui/material";
+import { latLonToMGRS } from "../utils/coordinateUtils";
+import { Box, Grid, TextField, Typography } from "@mui/material";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
@@ -33,7 +33,6 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     bearing: 0,
   };
 
-
   const [viewState, setViewState] = useState<ViewStateType>(initialViewState);
 
   useEffect(() => {
@@ -56,7 +55,6 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
 
   const handleViewportChange = (viewport: ViewStateType) => {
     setViewState(viewport);
-    console.log("Center coordinates:", viewport.longitude, viewport.latitude);
   };
 
   return (
@@ -79,12 +77,17 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     ) : (
       <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
         <Box component="div" sx={{ marginBottom: "16px"}}>
+          <Typography variant="h6" gutterBottom sx={{ textAlign: "center", color: "darkgray" }}>
+            Mapの中心地の座標
+          </Typography>
+        </Box>
+        <Box component="div" sx={{ marginBottom: "16px"}}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="緯度"
                 type="number"
-                value={viewState.longitude}
+                value={viewState.latitude}
                 fullWidth
               />
             </Grid>
@@ -92,7 +95,15 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
               <TextField
                 label="経度"
                 type="number"
-                value={viewState.latitude}
+                value={viewState.longitude}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12} sm={12}>
+              <TextField
+                label="UTM座標"
+                type="string"
+                value={latLonToMGRS(viewState.latitude, viewState.longitude)}
                 fullWidth
               />
             </Grid>
