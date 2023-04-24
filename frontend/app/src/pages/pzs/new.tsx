@@ -3,6 +3,7 @@ import axios from "../../../lib/axiosInstance";
 import { TextField, Button, Box, Grid, FormControlLabel, Switch } from "@mui/material";
 import { useRouter } from 'next/router';
 import { mgrsToLatLon } from "utils/coordinateUtils";
+import Mapbox from "components/Mapbox";
 
 const NewPz: React.FC = () => {
   const router = useRouter();
@@ -144,6 +145,9 @@ const NewPz: React.FC = () => {
                 fullWidth
               />
             </Grid>
+            <div style={{ flexGrow: 1, position: "relative", height: "400px", marginTop: "32px", marginBottom: "16px", paddingLeft: "16px" }}>
+              <Mapbox />
+            </div>
             <Grid item xs={12}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button
