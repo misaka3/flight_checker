@@ -37,8 +37,6 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
 
   useEffect(() => {
     const mgrsString = latLonToMGRS(viewState.latitude, viewState.longitude);
-    console.log('mgrsString');
-    console.log(mgrsString);
   }, [viewState]);
 
   const layers = objects.length > 0 ? objects.map((obj) => {
@@ -48,7 +46,8 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
       getPosition: (d: ObjectType) => d.coordinates,
       getFillColor: [255, 0, 0, 255 * 0.5],
       radius: obj.radius,
-      getElevation: (d: ObjectType) => d.altitude,
+      // change altitude to meters from feet
+      getElevation: (d: ObjectType) => d.altitude / 3.28084,
       pickable: true,
     });
   }) : [];
