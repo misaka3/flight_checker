@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from "react";
 import ReactMap, { AttributionControl, ViewState } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
-import { ColumnLayer } from "@deck.gl/layers/typed";
 import { latLonToMGRS } from "../utils/coordinateUtils";
 import { Box, Grid, TextField, Typography } from "@mui/material";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
-interface ObjectType {
-  coordinates: [number, number];
-  radius: number;
-  altitude: number;
-}
 interface MapboxProps {
-  objects?: Array<ObjectType>;
+  layers?: any[];
+  initialCoordinates?: number[];
 }
 
 interface ViewStateType {
@@ -24,12 +19,14 @@ interface ViewStateType {
   bearing: number;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
+const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] }) => {
+  console.log("initialCoordinates");
+  console.log(initialCoordinates);
   const initialViewState: ViewStateType = {
-    longitude: objects.length > 0 ? objects[0].coordinates[0] : 130.300,
-    latitude: objects.length > 0 ? objects[0].coordinates[1] : 33.265,
-    zoom: 12,
-    pitch: objects.length > 0 ? 45 : 0,
+    longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
+    latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 33.265,
+    zoom: 14,
+    pitch: 60,
     bearing: 0,
   };
 
@@ -39,25 +36,12 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     const mgrsString = latLonToMGRS(viewState.latitude, viewState.longitude);
   }, [viewState]);
 
-  const layers = objects.length > 0 ? objects.map((obj) => {
-    return new ColumnLayer({
-      id: `column-layer-${obj.coordinates}`,
-      data: [obj],
-      getPosition: (d: ObjectType) => d.coordinates,
-      getFillColor: [255, 0, 0, 255 * 0.5],
-      radius: obj.radius,
-      // change altitude to meters from feet
-      getElevation: (d: ObjectType) => d.altitude / 3.28084,
-      pickable: true,
-    });
-  }) : [];
-
   const handleViewportChange = (viewport: ViewStateType) => {
     setViewState(viewport);
   };
 
   return (
-    objects.length > 0 ? (
+    layers.length > 0 ? (
       <div style={{ width: "100%", height: "100%" }}>
         <DeckGL
           layers={layers}

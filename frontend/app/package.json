@@ -33,10 +33,12 @@
     "react-map-gl": "^7.0.23",
     "three": "^0.151.3",
     "three-gltf-exporter": "^0.0.1",
+    "togeojson": "^0.16.0",
     "typescript": "5.0.4"
   },
   "devDependencies": {
     "@deck.gl/mesh-layers": "^8.9.7",
-    "@types/three": "^0.150.1"
+    "@types/three": "^0.150.1",
+    "@types/xmldom": "^0.1.31"
   }
 }
