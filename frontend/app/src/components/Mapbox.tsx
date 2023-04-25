@@ -41,17 +41,17 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
     console.log(mgrsString);
   }, [viewState]);
 
-  const layers = objects.length > 0 ? [
-    new ColumnLayer({
-      id: "column-layer",
-      data: objects,
+  const layers = objects.length > 0 ? objects.map((obj) => {
+    return new ColumnLayer({
+      id: `column-layer-${obj.coordinates}`,
+      data: [obj],
       getPosition: (d: ObjectType) => d.coordinates,
-      getFillColor: [255, 0, 0, 255],
-      getRadius: (d: ObjectType) => d.radius,
-      getHeight: (d: ObjectType) => d.altitude,
+      getFillColor: [255, 0, 0, 255 * 0.5],
+      radius: obj.radius,
+      getElevation: (d: ObjectType) => d.altitude,
       pickable: true,
-    }),
-  ] : [];
+    });
+  }) : [];
 
   const handleViewportChange = (viewport: ViewStateType) => {
     setViewState(viewport);
