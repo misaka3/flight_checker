@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ReactMap, { AttributionControl, ViewState } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
-import { ColumnLayer } from "@deck.gl/layers/typed";
+// import { ColumnLayer } from "@deck.gl/layers/typed";
 import { latLonToMGRS } from "../utils/coordinateUtils";
 import { Box, Grid, TextField, Typography } from "@mui/material";
 
@@ -15,6 +15,7 @@ interface ObjectType {
 interface MapboxProps {
   objects?: Array<ObjectType>;
   layers?: any[];
+  initialCoordinates: number[] | null;
 }
 
 interface ViewStateType {
@@ -25,12 +26,14 @@ interface ViewStateType {
   bearing: number;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ objects = [], layers = [] }) => {
+const Mapbox: React.FC<MapboxProps> = ({ objects = [], layers = [], initialCoordinates }) => {
+  console.log("initialCoordinates");
+  console.log(initialCoordinates);
   const initialViewState: ViewStateType = {
-    longitude: objects.length > 0 ? objects[0].coordinates[0] : 130.300,
-    latitude: objects.length > 0 ? objects[0].coordinates[1] : 33.265,
-    zoom: 12,
-    pitch: objects.length > 0 ? 45 : 0,
+    longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 0,
+    latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 0,
+    zoom: 14,
+    pitch: 60,
     bearing: 0,
   };
 
