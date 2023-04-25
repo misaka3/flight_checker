@@ -5,6 +5,7 @@ import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, Table
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
 import { mgrsToLatLon } from "utils/coordinateUtils";
+import { ColumnLayer } from "@deck.gl/layers/typed";
 
 interface Area {
   id: number;
@@ -79,6 +80,21 @@ const AreaEdit: React.FC = () => {
       console.error(error);
     }
   }, [id]);
+
+  const layers = pzs ? pzs.map((pz) => {
+    return new ColumnLayer({
+      id: `column-layer-${pz.coordinates}`,
+      data: [pz],
+      getPosition: (d: PzArrayObject) => d.coordinates,
+      getFillColor: [255, 0, 0, 255 * 0.5],
+      radius: pz.radius,
+      // change altitude to meters from feet
+      getElevation: (d: PzArrayObject) => d.altitude / 3.28084,
+      pickable: true,
+    });
+  }) : [];
+  
+  const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
 
   useEffect(() => {
     getAreaData();
@@ -174,7 +190,9 @@ const AreaEdit: React.FC = () => {
         </TableContainer>
       </Box>
       <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
-        <Mapbox objects={pzs} />
+        {layers.length > 0 && initialCoordinates && (
+          <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
+        )}
       </div>
       <Grid container justifyContent="flex-start">
         <Grid item>

@@ -12,3 +12,12 @@ export function mgrsToLatLon(mgrsString: string): [number, number] {
   const roundedLat = parseFloat(latLon[1].toFixed(6));
   return [roundedLat, roundedLon];
 }
+
+// mapboxにlayerを追加する際の初期表示位置取得
+export function getInitialCoordinates(features: any[]): number[] | null {
+  if (features.length === 0) return null;
+  const firstFeature = features[0];
+  const coordinates = firstFeature.geometry.coordinates;
+  if (coordinates.length === 0) return null;
+  return coordinates[0]; // [longitude(number), latitude(number), altitude(number)]
+};
