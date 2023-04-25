@@ -46,7 +46,7 @@ const Mapbox: React.FC<MapboxProps> = ({ objects = [] }) => {
       id: `column-layer-${obj.coordinates}`,
       data: [obj],
       getPosition: (d: ObjectType) => d.coordinates,
-      getFillColor: [255, 0, 0, 255],
+      getFillColor: [255, 0, 0, 255 * 0.5],
       radius: obj.radius,
       getElevation: (d: ObjectType) => d.altitude,
       pickable: true,
