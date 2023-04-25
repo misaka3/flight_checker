@@ -138,7 +138,7 @@ const NewPz: React.FC = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="高さ(m)"
+                label="高さ(ft)"
                 type="number"
                 value={altitude}
                 onChange={(e) => setAltitude(e.target.value)}
