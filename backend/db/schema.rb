@@ -10,11 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_18_124454) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_26_141030) do
   create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "events", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.string "name", null: false
+    t.bigint "area_id", null: false
+    t.string "director"
+    t.datetime "start_term"
+    t.datetime "end_term"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["area_id"], name: "index_events_on_area_id"
   end
 
   create_table "prohibited_zones", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -40,5 +51,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_18_124454) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "events", "areas"
   add_foreign_key "prohibited_zones", "areas"
 end
