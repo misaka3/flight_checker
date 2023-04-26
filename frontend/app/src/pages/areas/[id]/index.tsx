@@ -4,8 +4,7 @@ import axios from "../../../../lib/axiosInstance";
 import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
-import { mgrsToLatLon } from "utils/coordinateUtils";
-import { ColumnLayer } from "@deck.gl/layers/typed";
+import { createColumnLayer } from "utils/layerUtils";
 
 interface Area {
   id: number;
@@ -81,18 +80,7 @@ const AreaEdit: React.FC = () => {
     }
   }, [id]);
 
-  const layers = pzs ? pzs.map((pz) => {
-    return new ColumnLayer({
-      id: `column-layer-${pz.coordinates}`,
-      data: [pz],
-      getPosition: (d: PzArrayObject) => d.coordinates,
-      getFillColor: [255, 0, 0, 255 * 0.5],
-      radius: pz.radius,
-      // change altitude to meters from feet
-      getElevation: (d: PzArrayObject) => d.altitude / 3.28084,
-      pickable: true,
-    });
-  }) : [];
+  const layers = pzs ? pzs.map((pz) => createColumnLayer(pz)) : [];
   
   const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
 
