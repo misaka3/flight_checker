@@ -16,6 +16,7 @@
     "@deck.gl/react": "^8.9.7",
     "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.10.6",
+    "@mapbox/togeojson": "^0.16.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.0",
     "@types/mapbox-gl": "^2.7.10",
@@ -34,7 +35,7 @@
     "three": "^0.151.3",
     "three-gltf-exporter": "^0.0.1",
     "togeojson": "^0.16.0",
-    "typescript": "5.0.4"
+    "typescript": "^5.0.4"
   },
   "devDependencies": {
     "@deck.gl/mesh-layers": "^8.9.7",
