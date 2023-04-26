@@ -20,8 +20,6 @@ interface ViewStateType {
 }
 
 const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] }) => {
-  console.log("initialCoordinates");
-  console.log(initialCoordinates);
   const initialViewState: ViewStateType = {
     longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
     latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 33.265,
