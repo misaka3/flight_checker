@@ -22,8 +22,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_18_124454) do
     t.string "name", null: false
     t.integer "pz_type", default: 0, null: false
     t.boolean "grid_type", default: false, null: false
-    t.decimal "longitude", precision: 9, scale: 6
-    t.decimal "latitude", precision: 9, scale: 6
+    t.decimal "longitude", precision: 13, scale: 10
+    t.decimal "latitude", precision: 13, scale: 10
     t.string "utm_coordinates"
     t.integer "radius"
     t.integer "altitude"

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { PathLayer } from '@deck.gl/layers/typed';
+import { PathStyleExtension } from '@deck.gl/extensions/typed';
 import Mapbox from 'components/Mapbox';
 import { DOMParser } from 'xmldom';
 import { gpx } from 'togeojson';
@@ -16,6 +17,18 @@ interface GPXType {
 const GpxPage = () => {
   const [gpxData, setGpxData] = useState<GPXType | null>(null);
   const [file, setFile] = useState<File | null>(null);
+
+  const altitudeToColor = (altitude: number): [number, number, number] => {
+    const minAltitude = 0;
+    const maxAltitude = 4000;
+  
+    const t = (altitude - minAltitude) / (maxAltitude - minAltitude);
+    const r = t * 255;
+    const g = 0;
+    const b = (1 - t) * 255;
+  
+    return [r, g, b];
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFile(e.target.files?.[0] || null);
@@ -54,8 +67,10 @@ const GpxPage = () => {
           id: 'path-layer',
           data: gpxData.features,
           getPath: (d: any) => d.geometry.coordinates,
-          getColor: [255, 0, 0],
+          getColor: (d: any) => d.geometry.coordinates.map((coordinate: any) => altitudeToColor(coordinate[2] * 3.28084)), // meters to feet
           getWidth: 20,
+          extensions: [new PathStyleExtension({ dash: true })],
+          getDashArray: (d: any) => [0, 0],
         }),
       ]
     : [];
