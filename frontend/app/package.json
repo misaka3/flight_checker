@@ -41,8 +41,6 @@
   },
   "devDependencies": {
     "@babel/cli": "^7.21.0",
-    "@babel/core": "^7.21.4",
-    "@babel/preset-env": "^7.21.4",
     "@deck.gl/mesh-layers": "^8.9.7",
     "@types/geojson": "^7946.0.10",
     "@types/three": "^0.150.1",

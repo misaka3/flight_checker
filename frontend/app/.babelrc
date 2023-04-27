@@ -1,8 +1,0 @@
-{
-  "presets": [
-    ["next/babel", { "swcMinify": true }]
-  ],
-  "plugins": [
-    ["dynamic-import-node", { "noInterop": true }]
-  ]
-}
