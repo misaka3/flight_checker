@@ -2,7 +2,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import Mapbox from 'components/Mapbox';
 import { DOMParser } from 'xmldom';
-import { gpx } from 'togeojson';
+import { gpx } from '@tmcw/togeojson';
 import { Box, Button, TextField, Grid } from '@mui/material';
 import { getInitialCoordinates } from 'utils/coordinateUtils'
 import { createPathLayer } from 'utils/layerUtils';

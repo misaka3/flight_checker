@@ -19,6 +19,7 @@
     "@mapbox/togeojson": "^0.16.0",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.0",
+    "@tmcw/togeojson": "^5.6.0",
     "@types/mapbox-gl": "^2.7.10",
     "@types/node": "^18.16.1",
     "@types/react": "^18.2.0",

@@ -858,6 +858,11 @@
   dependencies:
     tslib "^2.4.0"
 
+"@tmcw/togeojson@^5.6.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@tmcw/togeojson/-/togeojson-5.6.0.tgz#a6c96971acdf36eef73a1c398cf19a565eb02831"
+  integrity sha512-p+c0kbSY/tIwd3C0rpmTf3iFAOUYV6bkJbDiq0oQDGROOc7c6uh/X8r/mijY6SIFYIkVuKc8MS2REKhur2e6Jw==
+
 "@turf/boolean-clockwise@^5.1.5":
   version "5.1.5"
   resolved "https://registry.yarnpkg.com/@turf/boolean-clockwise/-/boolean-clockwise-5.1.5.tgz#3302b7dac62c5e291a0789e29af7283387fa9deb"
