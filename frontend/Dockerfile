@@ -7,10 +7,14 @@ RUN apt-get update && \
     npm install yarn && \
     npm install -g next
 
+ENV CI=true
+
 COPY app/package.json ./
 COPY app/yarn.lock ./
 RUN yarn install --frozen-lockfile --non-interactive --no-progress
 
-ENV CI=true
-
 COPY . .
+COPY app/update-tinySdf.sh .
+RUN chmod +x ./update-tinySdf.sh
+
+RUN ./update-tinySdf.sh
