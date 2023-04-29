@@ -5,6 +5,11 @@ on:
     branches:
       # - development
       - feature/#28
+  workflow_dispatch:
+    inputs:
+      logLevel:
+        required: true
+        default: 'warning'
 
 jobs:
   deploy:
