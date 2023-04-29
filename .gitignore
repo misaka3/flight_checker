@@ -39,9 +39,9 @@ frontend/app/build
 # misc
 frontend/app.DS_Store
 frontend/app.env.local
-frontend/app.env.development.local
-frontend/app.env.test.local
-frontend/app.env.production.local
+frontend/app.env.development
+frontend/app.env.test
+frontend/app.env.production
 
 frontend/appnpm-debug.log*
 frontend/appyarn-debug.log*
