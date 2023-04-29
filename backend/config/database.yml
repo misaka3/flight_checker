@@ -19,7 +19,13 @@ default: &default
 
 development:
   <<: *default
-  database: api_development
+  adapter: mysql2
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  ssl_mode: verify_identity
+  sslca: "/etc/ssl/certs/ca-certificates.crt"
 
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
@@ -48,8 +54,18 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
-production:
-  <<: *default
-  database: api_production
-  username: api
-  password: <%= ENV["API_DATABASE_PASSWORD"] %>
+# production:
+#   <<: *default
+#   database: api_production
+#   username: api
+#   password: <%= ENV["API_DATABASE_PASSWORD"] %>
+
+# production:
+#   adapter: mysql2
+#   encoding: utf8mb4
+#   database: <%= ENV['DATABASE_NAME'] %>
+#   username: <%= ENV['DATABASE_USERNAME'] %>
+#   password: <%= ENV['DATABASE_PASSWORD'] %>
+#   host: <%= ENV['DATABASE_HOST'] %>
+#   port: <%= ENV['DATABASE_PORT'] %>
+#   sslmode: required

@@ -1,6 +1,9 @@
 # Ignore bundler config.
 backend/.bundle
 
+# Ignore env file.
+backend/.env
+
 # Ignore all logfiles and tempfiles.
 backend/log/*
 backend/tmp/*
