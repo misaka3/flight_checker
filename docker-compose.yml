@@ -23,6 +23,7 @@ services:
       - "3306:3306"
   front:
     build: ./frontend/
+    command: yarn dev
     volumes:
       - ./frontend/app:/front
     ports:
@@ -30,7 +31,7 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - CHOKIDAR_USEPOLLING=true
-  
+      - WATCHPACK_POLLING=true
+
 volumes:
   db-volume:

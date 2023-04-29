@@ -18,19 +18,13 @@ DB作成
 $ docker compose exec api rails db:create
 ```
 
-railsアプリ起動を確認
+railsアプリへアクセス
 ```
 http://localhost:3001/
 ```
 
 ### frontend側対応
-Reactアプリの起動
-```
-$ docker compose exec front bash
-$ npm start
-```
-
-Reactアプリにアクセス
+Next.jsアプリへアクセス
 ```
 http://localhost:3000/
 ```

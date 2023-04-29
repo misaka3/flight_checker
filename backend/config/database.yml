@@ -21,35 +21,19 @@ development:
   <<: *default
   database: api_development
 
+production:
+  <<: *default
+  adapter: mysql2
+  database: <%= ENV['DATABASE_NAME'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  host: <%= ENV['DATABASE_HOST'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  ssl_mode: verify_identity
+  sslca: "/etc/ssl/certs/ca-certificates.crt"
+
 # Warning: The database defined as "test" will be erased and
 # re-generated from your development database when you run "rake".
 # Do not set this db to the same as development or production.
 test:
   <<: *default
   database: api_test
-
-# As with config/credentials.yml, you never want to store sensitive information,
-# like your database password, in your source code. If your source code is
-# ever seen by anyone, they now have access to your database.
-#
-# Instead, provide the password or a full connection URL as an environment
-# variable when you boot the app. For example:
-#
-#   DATABASE_URL="mysql2://myuser:mypass@localhost/somedatabase"
-#
-# If the connection URL is provided in the special DATABASE_URL environment
-# variable, Rails will automatically merge its configuration values on top of
-# the values provided in this file. Alternatively, you can specify a connection
-# URL environment variable explicitly:
-#
-#   production:
-#     url: <%= ENV["MY_APP_DATABASE_URL"] %>
-#
-# Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
-# for a full overview on how database connection configuration can be specified.
-#
-production:
-  <<: *default
-  database: api_production
-  username: api
-  password: <%= ENV["API_DATABASE_PASSWORD"] %>
