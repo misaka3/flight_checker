@@ -34,9 +34,18 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] })
     const mgrsString = latLonToMGRS(viewState.latitude, viewState.longitude);
   }, [viewState]);
 
-  const handleViewportChange = (viewport: ViewStateType) => {
+  const handleViewportChange = (params: { viewState: ViewState; viewId: string }) => {
+    const viewport: ViewStateType = {
+      longitude: params.viewState.longitude,
+      latitude: params.viewState.latitude,
+      zoom: params.viewState.zoom,
+      pitch: params.viewState.pitch,
+      bearing: params.viewState.bearing,
+    };
+  
     setViewState(viewport);
   };
+
 
   return (
     layers.length > 0 ? (
@@ -45,7 +54,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] })
           layers={layers}
           initialViewState={initialViewState}
           controller={true}
-          onViewStateChange={handleViewportChange}
+          onViewStateChange={handleViewportChange as any}
         >
           <ReactMap
             {...viewState}

@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :events
   resources :prohibited_zones do
     collection do
       post 'create_obj'
