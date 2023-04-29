@@ -3,7 +3,8 @@ name: Deploy Rails App to Cloud Run
 on:
   push:
     branches:
-      - development
+      # - development
+      - feature/#28
 
 jobs:
   deploy:
