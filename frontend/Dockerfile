@@ -11,7 +11,7 @@ ENV CI=true
 
 COPY app/package.json ./
 COPY app/yarn.lock ./
-RUN yarn install --frozen-lockfile --non-interactive --no-progress
+RUN yarn install
 
 COPY app/update-tinySdf.sh .
 RUN chmod +x ./update-tinySdf.sh
