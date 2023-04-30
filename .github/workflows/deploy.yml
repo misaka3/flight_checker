@@ -3,8 +3,7 @@ name: Deploy Rails App to Cloud Run
 on:
   push:
     branches:
-      # - master
-      - feature/#30
+      - master
   workflow_dispatch:
     inputs:
       logLevel:
