@@ -9,6 +9,7 @@ import {
 import PlaceIcon from '@mui/icons-material/Place';
 import DoneAllIcon from '@mui/icons-material/DoneAll';
 import AirplanemodeActiveIcon from '@mui/icons-material/AirplanemodeActive';
+import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import { useRouter } from 'next/router';
 interface CustomListProps {
   open: boolean;
@@ -20,6 +21,7 @@ const CustomList: React.FC<CustomListProps> = ({ open }) => {
   const items = [
     { name: 'エリア一覧', path: '/areas', icon: 'PlaceIcon' },
     { name: 'タスクタイプ一覧', path: '/task_type_all', icon: 'DoneAllIcon' },
+    { name: '大会一覧', path: '/events', icon: 'SportsScoreIcon' },
     { name: 'GPXファイル読み込み', path: '/flights/new', icon: 'AirplanemodeActiveIcon' }
   ];
 
@@ -31,10 +33,12 @@ const CustomList: React.FC<CustomListProps> = ({ open }) => {
     switch (icon) {
       case 'PlaceIcon':
         return <PlaceIcon />;
-        case 'DoneAllIcon':
-          return <DoneAllIcon />;
-        case 'AirplanemodeActiveIcon':
-          return <AirplanemodeActiveIcon />;
+      case 'DoneAllIcon':
+        return <DoneAllIcon />;
+      case 'SportsScoreIcon':
+        return <SportsScoreIcon />;
+      case 'AirplanemodeActiveIcon':
+        return <AirplanemodeActiveIcon />;
       default:
         return null;
     }
