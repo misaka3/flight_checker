@@ -1,0 +1,2 @@
+class FlightPz < ApplicationRecord
+end

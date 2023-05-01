@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_26_141030) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_01_131400) do
   create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -26,6 +26,35 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_26_141030) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["area_id"], name: "index_events_on_area_id"
+  end
+
+  create_table "flight_pzs", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "flight_id", null: false
+    t.bigint "prohibited_zone_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flight_id"], name: "index_flight_pzs_on_flight_id"
+    t.index ["prohibited_zone_id"], name: "index_flight_pzs_on_prohibited_zone_id"
+  end
+
+  create_table "flights", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "event_id", null: false
+    t.datetime "task_briefing_datetime", null: false
+    t.boolean "order_type", null: false
+    t.string "launch_period", null: false
+    t.boolean "observer", null: false
+    t.string "next_briefing", null: false
+    t.string "qnh", null: false
+    t.string "launch_reqmts", null: false
+    t.string "clp", null: false
+    t.boolean "solo_flight", null: false
+    t.string "search_period", null: false
+    t.time "sunrise", null: false
+    t.time "sunset", null: false
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_id"], name: "index_flights_on_event_id"
   end
 
   create_table "prohibited_zones", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
