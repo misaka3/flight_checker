@@ -4,6 +4,7 @@ import { TextField, Button, Box, Grid, FormControlLabel, Switch } from "@mui/mat
 import { useRouter } from 'next/router';
 import { mgrsToLatLon } from "utils/coordinateUtils";
 import Mapbox from "components/Mapbox";
+import PageTitle from 'components/PageTitle';
 
 const NewPz: React.FC = () => {
   const router = useRouter();
@@ -70,6 +71,7 @@ const NewPz: React.FC = () => {
 
   return (
     <div>
+      <PageTitle title="PZ登録" />
       <Box component="div" sx={{ mb: 4 }}>
         <FormControlLabel
           control={

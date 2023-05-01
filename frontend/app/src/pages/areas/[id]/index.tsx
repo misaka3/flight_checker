@@ -5,6 +5,7 @@ import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, Table
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
 import { createColumnLayer } from "utils/layerUtils";
+import PageTitle from 'components/PageTitle';
 
 interface Area {
   id: number;
@@ -101,11 +102,7 @@ const AreaEdit: React.FC = () => {
 
   return (
     <div>
-      <Box mb={4}>
-        <Typography variant="h5" gutterBottom sx={{ textAlign: 'center', color: 'darkgray' }}>
-          {area.name}エリア
-        </Typography>
-      </Box>
+      <PageTitle title={`${area.name}エリア`} />
       <Grid container justifyContent="flex-end" mb={4}>
         <Grid item>
           <Button

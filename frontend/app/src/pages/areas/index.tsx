@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "../../../lib/axiosInstance";
 import { useRouter } from "next/router";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from "@mui/material";
+import PageTitle from "components/PageTitle";
 
 interface Area {
   id: number;
@@ -35,30 +36,33 @@ const Areas = () => {
   };
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Operations</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {areas.map((area) => (
-            <TableRow key={area.id} hover onClick={() => handleRowClick(area.id)} style={{ cursor: "pointer" }}>
-              <TableCell>{area.id}</TableCell>
-              <TableCell>{area.name}</TableCell>
-              <TableCell>
-                <Button variant="contained" color="error" onClick={(e) => {e.stopPropagation(); handleDelete(area.id);}}>
-                  削除
-                </Button>
-              </TableCell>
+    <div>
+      <PageTitle title="エリア一覧" />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Operations</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {areas.map((area) => (
+              <TableRow key={area.id} hover onClick={() => handleRowClick(area.id)} style={{ cursor: "pointer" }}>
+                <TableCell>{area.id}</TableCell>
+                <TableCell>{area.name}</TableCell>
+                <TableCell>
+                  <Button variant="contained" color="error" onClick={(e) => {e.stopPropagation(); handleDelete(area.id);}}>
+                    削除
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 };
 

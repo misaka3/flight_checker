@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../../lib/axiosInstance";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+import PageTitle from 'components/PageTitle';
 
 interface TaskType {
   id: number;
@@ -25,28 +26,31 @@ const TaskTypes: React.FC = () => {
   }, []);
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>ID</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Description</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {taskTypes.map((taskType) => (
-            <TableRow key={taskType.id}>
-              <TableCell component="th" scope="row">
-                {taskType.id}
-              </TableCell>
-              <TableCell>{taskType.name}</TableCell>
-              <TableCell>{taskType.description}</TableCell>
+    <div>
+      <PageTitle title="タスク種別一覧" />
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>ID</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Description</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {taskTypes.map((taskType) => (
+              <TableRow key={taskType.id}>
+                <TableCell component="th" scope="row">
+                  {taskType.id}
+                </TableCell>
+                <TableCell>{taskType.name}</TableCell>
+                <TableCell>{taskType.description}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </div>
   );
 };
 
