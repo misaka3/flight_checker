@@ -22,7 +22,7 @@ const CustomList: React.FC<CustomListProps> = ({ open }) => {
     { name: 'エリア一覧', path: '/areas', icon: 'PlaceIcon' },
     { name: 'タスクタイプ一覧', path: '/task_type_all', icon: 'DoneAllIcon' },
     { name: '大会一覧', path: '/events', icon: 'SportsScoreIcon' },
-    { name: 'GPXファイル読み込み', path: '/flights/new', icon: 'AirplanemodeActiveIcon' }
+    { name: 'GPXファイル読み込み', path: '/flights/view', icon: 'AirplanemodeActiveIcon' }
   ];
 
   const handleClick = (path: string) => {
