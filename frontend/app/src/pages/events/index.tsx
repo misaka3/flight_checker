@@ -3,6 +3,7 @@ import axios from "../../../lib/axiosInstance";
 import { useRouter } from "next/router";
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from "@mui/material";
 import PageTitle from "components/PageTitle";
+import { format } from 'date-fns';
 
 interface Event {
   id: number;
@@ -43,6 +44,10 @@ const Events = () => {
     router.push(`/events/${id}`);
   };
 
+  const formatDate = (date: Date) => {
+    return format(date, 'yyyy/MM/dd HH:mm');
+  }
+
   return (
     <div>
       <PageTitle title="大会一覧" />
@@ -57,6 +62,9 @@ const Events = () => {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>大会名</TableCell>
+              <TableCell>エリア</TableCell>
+              <TableCell>ED</TableCell>
+              <TableCell>開催期間</TableCell>
               <TableCell>Operations</TableCell>
             </TableRow>
           </TableHead>
@@ -66,6 +74,9 @@ const Events = () => {
                 <TableRow key={event.id} hover onClick={() => handleRowClick(event.id)} style={{ cursor: "pointer" }}>
                   <TableCell>{event.id}</TableCell>
                   <TableCell>{event.name}</TableCell>
+                  <TableCell>{event.area_id}</TableCell>
+                  <TableCell>{event.director}</TableCell>
+                  <TableCell>{formatDate(new Date(event.start_term))} ～ {formatDate(new Date(event.end_term))}</TableCell>
                   <TableCell>
                     <Button variant="contained" color="error" onClick={(e) => {e.stopPropagation(); handleDelete(event.id);}}>
                       削除
