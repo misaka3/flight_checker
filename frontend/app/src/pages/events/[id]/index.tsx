@@ -35,30 +35,13 @@ interface FlightObject {
 const EventPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  console.log("id: " + id);
 
   const [event, setEvent] = useState<Event>();
-  const [flights, setFlights] = useState([]);
 
   const getEventData = useCallback(async () => {
     try {
       const response = await axios.get(`/events/${id}`);
       setEvent(response.data);
-      console.log("response");
-      console.log(response);
-      console.log("response.data.flights");
-      console.log(response.data.flights);
-      // let pz_array: FlightObject[] = []
-      // if (response.data.prohibited_zones) {
-      //   response.data.prohibited_zones.forEach((pz: PzObject) => {
-      //     pz_array.push({
-      //       coordinates: [parseFloat(pz.longitude), parseFloat(pz.latitude)],
-      //       radius: pz.radius,
-      //       altitude: pz.altitude
-      //     })
-      //   })
-      //   setPzs(pz_array);
-      // }
     } catch (error) {
       console.error(error);
     }
@@ -68,10 +51,13 @@ const EventPage = () => {
     getEventData();
   }, [getEventData]);
 
-  const deleteFlight = (flightId: number) => {
-    axios.delete(`/flights/${flightId}`)
-      .then(() => setFlights(flights.filter(flight => flight.id !== flightId)))
-      .catch(error => console.error(error));
+  const deleteFlight = async (flightId: number) => {
+    try {
+      await axios.delete(`/flights/${flightId}`);
+      getEventData();
+    } catch (error) {
+      console.error(error);
+    }
   };
   
   if (!event) return <div>Loading...</div>;
@@ -96,10 +82,15 @@ const EventPage = () => {
             <TableBody>
               {event.flights.length > 0 ? (
                 event.flights.map(flight => (
-                  <TableRow key={flight.id}>
+                  <TableRow
+                    key={flight.id}
+                    hover
+                    onClick={() => router.push(`/flights/${flight.id}`)}
+                    style={{ cursor: "pointer" }}
+                  >
                     <TableCell>{format(new Date(flight.task_briefing_datetime), 'yyyy年M月d日(E) HH時mm分', { locale: jaLocale })}</TableCell>
                     <TableCell>
-                      <Button variant="contained" color="secondary" onClick={() => deleteFlight(flight.id)}>
+                      <Button variant="contained" color="error" onClick={() => deleteFlight(flight.id)}>
                         削除
                       </Button>
                     </TableCell>
