@@ -56,16 +56,10 @@ export default function NewTask() {
     scoring_area: ''
   });
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<number>) => {
     if (typeof event.target.name === 'string') {
       setTask({ ...task, [event.target.name]: event.target.value });
     }
-  };
-
-  const handleTaskTypeChange = (event: SelectChangeEvent<number>) => {
-    console.log("event.target.name, event.target.value");
-    console.log(event.target.name, event.target.value);
-    setTask({ ...task, [event.target.name]: event.target.value });
   };
 
   const handleSubmit = async () => {
@@ -88,7 +82,7 @@ export default function NewTask() {
             label="タスクNo."
             name="task_num"
             value={task.task_num}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -101,7 +95,7 @@ export default function NewTask() {
               id="task-type-select"
               name="task_type_id"
               value={task.task_type_id}
-              onChange={handleTaskTypeChange}
+              onChange={handleChange}
               label="タスク種別"
             >
               {taskTypes.map(taskType => (
@@ -117,7 +111,7 @@ export default function NewTask() {
             label="Rule"
             name="rule"
             value={task.rule}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -128,7 +122,7 @@ export default function NewTask() {
             label="Marker Colour"
             name="marker_color"
             value={task.marker_color}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -139,7 +133,7 @@ export default function NewTask() {
             label="Marker Drop"
             name="marker_drop"
             value={task.marker_drop}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -150,7 +144,7 @@ export default function NewTask() {
             label="MMA"
             name="mma"
             value={task.mma}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -161,7 +155,7 @@ export default function NewTask() {
             label="ロガーマーカー"
             name="logger_marker"
             value={task.logger_marker}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -173,7 +167,7 @@ export default function NewTask() {
             label="説明"
             name="description"
             value={task.description}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
             multiline
@@ -187,7 +181,7 @@ export default function NewTask() {
             label="スコアリングピリオド"
             name="scoring_period"
             value={task.scoring_period}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
@@ -199,7 +193,7 @@ export default function NewTask() {
             label="スコアリングエリア"
             name="scoring_area"
             value={task.scoring_area}
-            onChange={handleInputChange}
+            onChange={handleChange}
             variant="outlined"
             fullWidth
           />
