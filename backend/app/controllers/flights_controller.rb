@@ -46,6 +46,21 @@ class FlightsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def flight_params
-      params.fetch(:flight, {})
+      params.require(:flight).permit(
+        :event_id, 
+        :task_briefing_datetime, 
+        :order_type, 
+        :launch_period, 
+        :observer, 
+        :next_briefing, 
+        :qnh, 
+        :launch_reqmts, 
+        :clp, 
+        :solo_flight, 
+        :search_period, 
+        :sunrise, 
+        :sunset, 
+        :notes
+      )
     end
 end
