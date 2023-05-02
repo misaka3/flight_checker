@@ -1,6 +1,5 @@
 import * as React from 'react';
-import dayjs, { Dayjs } from 'dayjs';
-import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { Dayjs } from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from '@mui/x-date-pickers/TimePicker';
@@ -15,13 +14,11 @@ export default function TimePickerValue({ label, value, onChange }: Props) {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DemoContainer components={['TimePicker', 'TimePicker']}>
-        <TimePicker
-          label={label}
-          value={value}
-          onChange={onChange}
-        />
-      </DemoContainer>
+      <TimePicker
+        label={label}
+        value={value}
+        onChange={onChange}
+      />
     </LocalizationProvider>
   );
 }
