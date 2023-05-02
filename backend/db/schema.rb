@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_01_131400) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_02_113416) do
   create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
     t.datetime "created_at", null: false
@@ -78,6 +78,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_01_131400) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "tasks", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "task_type_id", null: false
+    t.bigint "flight_id", null: false
+    t.string "rule", null: false
+    t.string "marker_color"
+    t.boolean "marker_drop"
+    t.string "mma"
+    t.string "logger_marker"
+    t.string "description"
+    t.string "scoring_period", null: false
+    t.string "scoring_area", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["flight_id"], name: "index_tasks_on_flight_id"
+    t.index ["task_type_id"], name: "index_tasks_on_task_type_id"
   end
 
 end
