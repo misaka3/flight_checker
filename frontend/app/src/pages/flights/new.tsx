@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
-import { Button, TextField, FormControlLabel, Checkbox, Grid, Box, Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import { Button, TextField, Grid, Box, Select, MenuItem, InputLabel, FormControl, SelectChangeEvent } from '@mui/material';
 import axios from "../../../lib/axiosInstance";
 import DateTimePicker from 'components/DateTimePicker';
 import TimePicker from 'components/TimePicker';
@@ -29,10 +29,10 @@ export default function NewFlight() {
     pz: 'All PZs in Force',
   });
 
-  const handleInputChange = (event) => {
-    console.log("event.target.name, event.target.value");
-    console.log(event.target.name, event.target.value);
-    setFlight({ ...flight, [event.target.name]: event.target.value });
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
+    if (typeof event.target.name === 'string') {
+      setFlight({ ...flight, [event.target.name]: event.target.value });
+    }
   };
 
   const handleDateTimeChange = (newValue: Dayjs | null) => {
