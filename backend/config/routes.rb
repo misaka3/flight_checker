@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :tasks
+  resources :flights
   resources :events
   resources :prohibited_zones do
     collection do

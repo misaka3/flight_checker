@@ -10,7 +10,7 @@ class EventsController < ApplicationController
 
   # GET /events/1
   def show
-    render json: @event
+    render json: @event, include: :flights
   end
 
   # POST /events
@@ -46,6 +46,6 @@ class EventsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def event_params
-      params.fetch(:event, {})
+      params.require(:event).permit(:name, :area_id, :director, :start_term, :end_term)
     end
 end
