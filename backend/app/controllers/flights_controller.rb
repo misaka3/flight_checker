@@ -10,7 +10,7 @@ class FlightsController < ApplicationController
 
   # GET /flights/1
   def show
-    render json: @flight
+    render json: @flight, include: :tasks
   end
 
   # POST /flights
