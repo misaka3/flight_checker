@@ -83,12 +83,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_113416) do
   create_table "tasks", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "task_type_id", null: false
     t.bigint "flight_id", null: false
+    t.integer "task_num", null: false
     t.string "rule", null: false
     t.string "marker_color"
-    t.boolean "marker_drop"
+    t.string "marker_drop"
     t.string "mma"
     t.string "logger_marker"
-    t.string "description"
+    t.text "description"
     t.string "scoring_period", null: false
     t.string "scoring_area", null: false
     t.datetime "created_at", null: false

@@ -46,6 +46,7 @@ class TasksController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def task_params
-      params.fetch(:task, {})
+      params.require(:task).permit(:task_type_id, :flight_id, :task_num, :rule, :marker_color, :marker_drop, :mma, :logger_marker, :description, :scoring_period, :scoring_area)
     end
+    
 end
