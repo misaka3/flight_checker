@@ -65,7 +65,7 @@ const Events = () => {
               <TableCell>エリア</TableCell>
               <TableCell>ED</TableCell>
               <TableCell>開催期間</TableCell>
-              <TableCell>Operations</TableCell>
+              <TableCell />
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,6 +78,17 @@ const Events = () => {
                   <TableCell>{event.director}</TableCell>
                   <TableCell>{formatDate(new Date(event.start_term))} ～ {formatDate(new Date(event.end_term))}</TableCell>
                   <TableCell>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(`/events/${event.id}/edit`);
+                      }}
+                      style={{ marginRight: "10px" }}
+                    >
+                      編集
+                    </Button>
                     <Button variant="contained" color="error" onClick={(e) => {e.stopPropagation(); handleDelete(event.id);}}>
                       削除
                     </Button>
