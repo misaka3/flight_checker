@@ -1,0 +1,2 @@
+event_id,task_briefing_datetime,order_type,launch_period,observer,next_briefing,qnh,launch_reqmts,clp,solo_flight,search_period,sunrise,sunset,notes
+2,"Thu, 3 Nov 2022 06:00:00.000000000 UTC +00:00",true,Green Flag + 40 min.,false,"14:30 at Kubota Kaizen Center","1,018hPa",Event Launch Area,1600 - 8000,false,11:00,"Thu, 3 Nov 2022 06:45:00.000000000 UTC +00:00","Thu, 3 Nov 2022 17:20:00.000000000 UTC +00:00"
