@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import EventForm from "components/events/Form"
+import EventForm from "components/pages/EventForm"
 
 const EventsEditPage = () => {
   const router = useRouter();
