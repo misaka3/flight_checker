@@ -1,0 +1,2 @@
+task_type_id,flight_id,task_num,rule,marker_color,marker_drop,mma,logger_marker,description,scoring_period,scoring_area
+1,1,1,15.1,,,,Log Mark 1,"a. method of declaration                Log Goal 1 and 2, Before take-off\nb. number of goals permitted         2\nc. goals available for declarations  Any map coordinate (4/4 format) with Altitude\nd. minimum and maximum distances of goals from CLP min. 1km, max. 5.5km",ends at 0830,Entire Contest Area
