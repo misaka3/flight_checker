@@ -15,7 +15,8 @@ end
 unless Area.exists?
   CSV.foreach('db/seeds/csv/area.csv', headers: true) do |area|
     Area.create(
-      name: area['name']
+      name: area['name'],
+      utm_zone: area['utm_zone']
     )
   end
 end
