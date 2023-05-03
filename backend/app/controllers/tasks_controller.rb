@@ -10,7 +10,7 @@ class TasksController < ApplicationController
 
   # GET /tasks/1
   def show
-    render json: @task
+    render json: @task, include: :task_type
   end
 
   # POST /tasks

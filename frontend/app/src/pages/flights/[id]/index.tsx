@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from 'react';
 import PageTitle from 'components/PageTitle';
 import { format } from 'date-fns';
 import jaLocale from 'date-fns/locale/ja';
+import TaskForm from 'components/TaskForm'
 
 interface FlightObject {
   id: number;
@@ -24,6 +25,22 @@ interface FlightObject {
   sunrise: Date;
   sunset: Date;
   notes: string;
+  tasks:TaskObject[];
+}
+
+interface TaskObject {
+  id: number;
+  task_type_id: number;
+  flight_id: number;
+  task_num: number;
+  rule: string;
+  marker_color: string;
+  marker_drop: string;
+  mma: string;
+  logger_marker: string;
+  description: string;
+  scoring_period: string;
+  scoring_area: string;
 }
 
 const FlightPage = () => {
@@ -53,13 +70,13 @@ const FlightPage = () => {
   return (
     <div>
       <PageTitle title={format(new Date(flight.task_briefing_datetime), 'yyyy年M月d日(E) HH時mm分', { locale: jaLocale })} />
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: '20px' }}>
         <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-end', p: 2, mb: '16px' }}>
           <Link href={`/tasks/new?flight_id=${id}`} passHref>
             <Button variant="contained" color="primary">タスク登録</Button>
           </Link>
         </Box>
-        <Grid container spacing={2} style={{ border: "1px solid black" }}>
+        <Grid container spacing={1} style={{ border: "1px solid black" }}>
           <Grid item xs={2} style={{ border: "1px solid black" }}>
             <Typography>{format(new Date(flight.task_briefing_datetime), 'EEEE')}</Typography>
           </Grid>
@@ -148,11 +165,17 @@ const FlightPage = () => {
             <Typography>{flight.launch_reqmts}</Typography>
           </Grid>
         </Grid>
-        <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', p: 2 }}>
-          <Link href="/events" passHref>
-            <Button variant="contained" color="primary">戻る</Button>
-          </Link>
-        </Box>
+      </Box>
+      {flight.tasks.length > 0 && (
+        flight.tasks.map((task: TaskObject) => (
+          <TaskForm key={task.id} task_id={task.id.toString()} />
+        ))
+      )}
+
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', p: 2 }}>
+        <Link href="/events" passHref>
+          <Button variant="contained" color="primary">戻る</Button>
+        </Link>
       </Box>
     </div>
   );
