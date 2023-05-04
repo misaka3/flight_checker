@@ -1,6 +1,5 @@
-import { PathLayer } from '@deck.gl/layers/typed';
+import { PathLayer, ColumnLayer, IconLayer } from '@deck.gl/layers/typed';
 import { PathStyleExtension } from '@deck.gl/extensions/typed';
-import { ColumnLayer } from "@deck.gl/layers/typed";
 
 interface PzArrayObject {
   coordinates: [number, number];
@@ -52,3 +51,29 @@ export function createPathLayer(gpxDatas: any[]) {
 
   return pathLayer;
 }
+
+interface iconLayerProps {
+  coordinates: [number, number];
+}
+
+export function createIconLayer({ coordinates }: iconLayerProps) {
+  const data = [{ exits: 4214, coordinates: coordinates }];
+  const iconLayer = new IconLayer({
+    id: 'icon-layer',
+    data,
+    pickable: true,
+    // iconAtlas and iconMapping are required
+    // getIcon: return a string
+    iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
+    iconMapping: { marker: { x: 0, y: 0, width: 128, height: 128, mask: true } },
+    getIcon: d => 'marker',
+  
+    sizeScale: 15,
+    getPosition: d => d.coordinates,
+    getSize: d => 5,
+    getColor: d => [Math.sqrt(d.exits), 140, 0]
+  });
+
+  return iconLayer;
+}
+

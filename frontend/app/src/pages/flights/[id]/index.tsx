@@ -8,6 +8,10 @@ import PageTitle from 'components/PageTitle';
 import { format } from 'date-fns';
 import jaLocale from 'date-fns/locale/ja';
 import TaskForm from 'components/TaskForm'
+import Mapbox from "components/Mapbox";
+import { mgrsToLatLon } from 'utils/coordinateUtils';
+import { createIconLayer } from 'utils/layerUtils';
+import { IconLayer } from '@deck.gl/layers/typed';
 
 interface FlightObject {
   id: number;
@@ -26,6 +30,23 @@ interface FlightObject {
   sunset: Date;
   notes: string;
   tasks:TaskObject[];
+  event: EventObject;
+}
+
+interface AreaObject {
+  id: number;
+  name: string;
+  utm_zone: string;
+}
+
+interface EventObject {
+  id: number;
+  area: AreaObject;
+  area_id: number;
+  director: string;
+  name: string;
+  start_term: string;
+  end_term: string;
 }
 
 interface TaskObject {
@@ -47,8 +68,22 @@ const FlightPage = () => {
   const router = useRouter();
   // flight.id
   const { id } = router.query;
-
+  const [layers, setLayers] = useState<IconLayer[]>([]);
+  const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [flight, setFlight] = useState<FlightObject>();
+
+  const getLatLon = (utm_zone: string, clp_coordinates: string): (number[] | undefined) => {
+    const regex = /(\d{4}).+(\d{4})/;
+    const result = clp_coordinates.match(regex);
+    if (result !== null) {
+      const [_, firstFourDigits, secondFourDigits] = result;
+      const utm_coordinates = `${utm_zone}${firstFourDigits}0${secondFourDigits}0`;
+      const wgs_coordinates = mgrsToLatLon(utm_coordinates);
+      return wgs_coordinates;
+    } else {
+      return undefined;
+    }
+  };
 
   const getFlightData = useCallback(async () => {
     try {
@@ -64,6 +99,18 @@ const FlightPage = () => {
   useEffect(() => {
     getFlightData();
   }, [getFlightData]);
+
+  useEffect(() => {
+    if (flight !== undefined) {
+      const coordinates = getLatLon(flight.event.area.utm_zone, flight.clp);
+      if (coordinates !== undefined && coordinates.length === 2) {
+        const coordinatesTuple: [number, number] = [coordinates[1], coordinates[0]];
+        setInitialCoordinates(coordinatesTuple);
+        const iconLayer = createIconLayer({ coordinates: coordinatesTuple });
+        setLayers([iconLayer]);
+      }
+    }
+  }, [flight]);
   
   if (!flight) return <div>Loading...</div>;
 
@@ -171,6 +218,11 @@ const FlightPage = () => {
           <TaskForm key={task.id} task_id={task.id.toString()} />
         ))
       )}
+      <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
+        {layers.length > 0 && initialCoordinates && (
+          <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
+        )}
+      </div>
 
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', p: 2 }}>
         <Link href="/events" passHref>
