@@ -46,7 +46,6 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] })
     setViewState(viewport);
   };
 
-
   return (
     layers.length > 0 ? (
       <div style={{ width: "100%", height: "100%" }}>
