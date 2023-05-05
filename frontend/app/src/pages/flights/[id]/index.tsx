@@ -30,6 +30,7 @@ interface FlightObject {
   sunset: Date;
   notes: string;
   tasks:TaskObject[];
+  area: AreaObject;
   event: EventObject;
 }
 
@@ -37,11 +38,24 @@ interface AreaObject {
   id: number;
   name: string;
   utm_zone: string;
+  prohibited_zones: PzObject[];
+}
+
+interface PzObject {
+  id: number;
+  area_id: number;
+  name: string;
+  pz_type: number;
+  grid_type: boolean;
+  longitude: number;
+  latitude: number;
+  utm_coordinates: string;
+  radius: number;
+  altitude: number;
 }
 
 interface EventObject {
   id: number;
-  area: AreaObject;
   area_id: number;
   director: string;
   name: string;
@@ -100,9 +114,10 @@ const FlightPage = () => {
     getFlightData();
   }, [getFlightData]);
 
+  // create layers for mapbox
   useEffect(() => {
     if (flight !== undefined) {
-      const coordinates = getLatLon(flight.event.area.utm_zone, flight.clp);
+      const coordinates = getLatLon(flight.area.utm_zone, flight.clp);
       if (coordinates !== undefined && coordinates.length === 2) {
         const coordinatesTuple: [number, number] = [coordinates[1], coordinates[0]];
         setInitialCoordinates(coordinatesTuple);
@@ -137,7 +152,7 @@ const FlightPage = () => {
             <Typography>Task</Typography>
           </Grid>
           <Grid item xs={4} style={{ border: "1px solid black" }}>
-            <Typography>#1, #2, #3, #4</Typography>
+            {flight.tasks.map((task, index) => `#${task.task_num}${index === flight.tasks.length - 1 ? "" : ", "}`)}
           </Grid>
 
           <Grid item xs={2} style={{ border: "1px solid black" }}>
