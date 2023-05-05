@@ -10,7 +10,7 @@ import jaLocale from 'date-fns/locale/ja';
 import TaskForm from 'components/TaskForm'
 import Mapbox from "components/Mapbox";
 import { mgrsToLatLon } from 'utils/coordinateUtils';
-import { createIconLayer } from 'utils/layerUtils';
+import { createColumnLayer, createIconLayer } from 'utils/layerUtils';
 import { IconLayer } from '@deck.gl/layers/typed';
 
 interface FlightObject {
@@ -47,9 +47,15 @@ interface PzObject {
   name: string;
   pz_type: number;
   grid_type: boolean;
-  longitude: number;
-  latitude: number;
+  longitude: string;
+  latitude: string;
   utm_coordinates: string;
+  radius: number;
+  altitude: number;
+}
+
+interface PzLayerObject {
+  coordinates: [number, number];
   radius: number;
   altitude: number;
 }
@@ -117,12 +123,27 @@ const FlightPage = () => {
   // create layers for mapbox
   useEffect(() => {
     if (flight !== undefined) {
+      let new_layers = []
       const coordinates = getLatLon(flight.area.utm_zone, flight.clp);
       if (coordinates !== undefined && coordinates.length === 2) {
+        // createIconLayer
         const coordinatesTuple: [number, number] = [coordinates[1], coordinates[0]];
         setInitialCoordinates(coordinatesTuple);
         const iconLayer = createIconLayer({ coordinates: coordinatesTuple });
-        setLayers([iconLayer]);
+        new_layers.push(iconLayer);
+        // createColumnLayer
+        const pzs = flight.area.prohibited_zones;
+        if (pzs.length > 0) {
+          pzs.forEach((pz: PzObject) => {
+            let new_pz: PzLayerObject = {
+              coordinates: [parseFloat(pz.longitude), parseFloat(pz.latitude)],
+              radius: pz.radius,
+              altitude: pz.altitude
+            }
+            new_layers.push(createColumnLayer(new_pz));
+          })
+        }
+        setLayers(new_layers);
       }
     }
   }, [flight]);

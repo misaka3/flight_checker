@@ -1,22 +1,22 @@
 import { PathLayer, ColumnLayer, IconLayer } from '@deck.gl/layers/typed';
 import { PathStyleExtension } from '@deck.gl/extensions/typed';
 
-interface PzArrayObject {
+interface PzObject {
   coordinates: [number, number];
   radius: number;
   altitude: number;
 }
 
 // cylinder object
-export function createColumnLayer(pz: PzArrayObject) {
+export function createColumnLayer(pz: PzObject) {
   return new ColumnLayer({
     id: `column-layer-${pz.coordinates}`,
     data: [pz],
-    getPosition: (d: PzArrayObject) => d.coordinates,
+    getPosition: (d: PzObject) => d.coordinates,
     getFillColor: [255, 0, 0, 255 * 0.5],
     radius: pz.radius,
     // change altitude to meters from feet
-    getElevation: (d: PzArrayObject) => d.altitude / 3.28084,
+    getElevation: (d: PzObject) => d.altitude / 3.28084,
     pickable: true,
   });
 }
