@@ -1,0 +1,2 @@
+class TaskRule < ApplicationRecord
+end
