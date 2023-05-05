@@ -10,7 +10,7 @@ class FlightsController < ApplicationController
 
   # GET /flights/1
   def show
-    render json: @flight, include: { tasks: {}, event: { include: :area } }
+    render json: @flight, include: { tasks: {}, event: {}, area: { include: :prohibited_zones } }
   end
 
   # POST /flights
