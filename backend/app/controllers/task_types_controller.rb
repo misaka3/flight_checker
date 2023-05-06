@@ -5,7 +5,7 @@ class TaskTypesController < ApplicationController
   def index
     @task_types = TaskType.all
 
-    render json: @task_types
+    render json: @task_types, include: :task_rules
   end
 
   # GET /task_types/1

@@ -9,6 +9,11 @@ interface TaskTypeObject {
   name: string;
   short_name: string;
   description: string;
+  rule_num: string;
+  task_rules: Array<{
+    rule_num: string;
+    content: string;
+  }>;
 }
 
 interface Task {
@@ -30,6 +35,21 @@ export default function NewTask() {
   const { flight_id } = router.query;
   const [taskTypes, setTaskTypes] = useState<TaskTypeObject[]>([]);
 
+  const initialTask = {
+    task_type_id: 0,
+    flight_id: Number(flight_id),
+    task_num: 1,
+    rule: '',
+    marker_color: '',
+    marker_drop: '',
+    mma: '',
+    logger_marker: '',
+    description: '',
+    scoring_period: '',
+    scoring_area: ''
+  };
+  const [task, setTask] = useState<Task>(initialTask);
+
   useEffect(() => {
     const getTaskTypes = async () => {
       try {
@@ -42,23 +62,27 @@ export default function NewTask() {
     getTaskTypes();
   }, []);
 
-  const [task, setTask] = useState<Task>({
-    task_type_id: 1,
-    flight_id: Number(flight_id),
-    task_num: 1,
-    rule: '',
-    marker_color: '',
-    marker_drop: '',
-    mma: '',
-    logger_marker: '',
-    description: '',
-    scoring_period: '',
-    scoring_area: ''
-  });
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<number>) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     if (typeof event.target.name === 'string') {
       setTask({ ...task, [event.target.name]: event.target.value });
+    }
+  };
+
+  const handleSelectChange = (event: SelectChangeEvent<number>) => {
+    const value = event.target.value;
+  
+    const selectedTaskType = taskTypes.find(
+      (taskType) => taskType.id === Number(value)
+    );
+    if (selectedTaskType) {
+      setTask({
+        ...task,
+        task_type_id: Number(value),
+        rule: selectedTaskType.rule_num,
+        description: selectedTaskType.task_rules
+          .filter((rule) => rule.content.includes("Task data:"))
+          .map((rule) => `${rule.content.replace("Task data:\\n", "").trim()}`)[0] || "",
+      });
     }
   };
 
@@ -95,7 +119,7 @@ export default function NewTask() {
               id="task-type-select"
               name="task_type_id"
               value={task.task_type_id}
-              onChange={handleChange}
+              onChange={handleSelectChange}
               label="タスク種別"
             >
               {taskTypes.map(taskType => (
@@ -107,6 +131,7 @@ export default function NewTask() {
         <Grid item xs={4}>
           <TextField
             required
+            disabled
             id="outlined-required"
             label="Rule"
             name="rule"
@@ -166,12 +191,15 @@ export default function NewTask() {
             id="outlined-required"
             label="説明"
             name="description"
-            value={task.description}
+            value={task.description ? task.description.replace(/\\n/g, '\n') : ''}
             onChange={handleChange}
             variant="outlined"
             fullWidth
             multiline
             rows={4}
+            InputProps={{
+              style: { whiteSpace: "pre-wrap" }
+            }}
           />
         </Grid>
         <Grid item xs={12} md={6}>
