@@ -5,8 +5,20 @@ unless TaskType.exists?
   CSV.foreach('db/seeds/csv/task_type.csv', headers: true) do |task|
     TaskType.create(
       name: task['name'],
+      en_name: task['en_name'],
       short_name: task['short_name'],
+      rule_num: task['rule_num'],
       description: task['description']
+    )
+  end
+end
+# task_rules
+unless TaskRule.exists?
+  CSV.foreach('db/seeds/csv/task_rule.csv', headers: true) do |task|
+    TaskRule.create(
+      task_type_id: task['task_type_id'],
+      rule_num: task['rule_num'],
+      content: task['content']
     )
   end
 end
