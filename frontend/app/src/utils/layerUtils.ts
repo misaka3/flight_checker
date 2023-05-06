@@ -1,4 +1,4 @@
-import { PathLayer, ColumnLayer, IconLayer } from '@deck.gl/layers/typed';
+import { PathLayer, ColumnLayer, IconLayer, PolygonLayer } from '@deck.gl/layers/typed';
 import { PathStyleExtension } from '@deck.gl/extensions/typed';
 
 interface PzObject {
@@ -77,3 +77,29 @@ export function createIconLayer({ coordinates }: iconLayerProps) {
   return iconLayer;
 }
 
+// 多角形PZ
+export function createPolygonLayer() {
+  const data = [{
+    // Simple polygon (array of coords)
+    contour: [[130.2710684096029, 33.27189685159762], [130.2758683578665, 33.246140973190805], [130.27705801700506, 33.24278547664646], [130.27989281331486, 33.240451412345806], [130.28119359869015, 33.24011123174374], [130.30012244538267, 33.23885951784381], [130.322588970936, 33.24123292345678], [130.3225879256861, 33.247700794577554], [130.31955234834692, 33.259047117254426], [130.33545358427034, 33.27386286967099], [130.31101902160844, 33.27732953881099], [130.28928095759142, 33.273446048307164], [130.27717696051752, 33.27270743526614]],
+    altitude: 500
+  }];
+  const polygonLayer = new PolygonLayer({
+    id: 'polygon-layer',
+    data,
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d.contour,
+    extruded: true,
+    // meters to feets
+    getElevation: (d) => d.altitude / 3.28084,
+    getFillColor: [255, 0, 0, 76],
+    getLineColor: [255, 0, 0, 76],
+    getLineWidth: 1
+  });
+
+  return polygonLayer;
+}

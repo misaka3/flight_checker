@@ -4,7 +4,7 @@ import axios from "../../../../lib/axiosInstance";
 import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
-import { createColumnLayer } from "utils/layerUtils";
+import { createColumnLayer, createPolygonLayer } from "utils/layerUtils";
 import PageTitle from 'components/PageTitle';
 
 interface Area {
@@ -81,7 +81,8 @@ const AreaEdit: React.FC = () => {
     }
   }, [id]);
 
-  const layers = pzs ? pzs.map((pz) => createColumnLayer(pz)) : [];
+  const layers = [createPolygonLayer()];
+  // const layers = pzs ? pzs.map((pz) => createColumnLayer(pz)) : [];
   
   const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
 
