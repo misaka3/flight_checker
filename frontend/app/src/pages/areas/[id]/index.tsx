@@ -4,7 +4,7 @@ import axios from "../../../../lib/axiosInstance";
 import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
-import { createColumnLayer } from "utils/layerUtils";
+import { createColumnLayer, createPolygonLayer } from "utils/layerUtils";
 import PageTitle from 'components/PageTitle';
 
 interface Area {
@@ -23,13 +23,21 @@ interface PzObject {
   area_id: number;
   name: string;
   pz_type: number;
-  grid_type: boolean;
-  longitude: string;
-  latitude: string;
-  utm_coordinates: string;
+  data: ColumnLayerObject | PolygonLayerObject;
+}
+
+interface ColumnLayerObject {
+  coordinates: [number, number];
   radius: number;
   altitude: number;
-  url: string;
+  grid_type: boolean;
+  utm_coordinates: string;
+}
+
+interface PolygonLayerObject {
+  contour: [number, number][];
+  altitude: number;
+  color: [number, number, number, number];
 }
 
 const AreaEdit: React.FC = () => {
@@ -65,14 +73,16 @@ const AreaEdit: React.FC = () => {
       const response = await axios.get(`/areas/${id}`);
       setArea(response.data);
 
-      let pz_array: PzArrayObject[] = []
+      let pz_array: any[] = []
       if (response.data.prohibited_zones) {
         response.data.prohibited_zones.forEach((pz: PzObject) => {
-          pz_array.push({
-            coordinates: [parseFloat(pz.longitude), parseFloat(pz.latitude)],
-            radius: pz.radius,
-            altitude: pz.altitude
-          })
+          let layer;
+          if (pz.pz_type === 0) {
+            layer = createColumnLayer(pz.data as ColumnLayerObject);
+          } else if (pz.pz_type === 1) {
+            layer = createPolygonLayer(pz.data);
+          }
+          pz_array.push(layer);
         })
         setPzs(pz_array);
       }
@@ -81,9 +91,10 @@ const AreaEdit: React.FC = () => {
     }
   }, [id]);
 
-  const layers = pzs ? pzs.map((pz) => createColumnLayer(pz)) : [];
+  const layers = pzs ? pzs : [];
   
-  const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
+  // const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
+  const initialCoordinates = [130.2710684096029, 33.27189685159762];
 
   useEffect(() => {
     getAreaData();
@@ -123,9 +134,9 @@ const AreaEdit: React.FC = () => {
                 <TableCell>PZ名</TableCell>
                 {/* <TableCell>PZタイプ</TableCell> */}
                 <TableCell>座標タイプ</TableCell>
-                <TableCell>座標</TableCell>
+                <TableCell>コーディネート</TableCell>
                 <TableCell>半径</TableCell>
-                <TableCell>高さ</TableCell>
+                <TableCell>高さ(ft)</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -141,14 +152,18 @@ const AreaEdit: React.FC = () => {
                     <TableCell>{pz.id}</TableCell>
                     <TableCell>{pz.name}</TableCell>
                     {/* <TableCell>{pz.pz_type}</TableCell> */}
-                    <TableCell>{pz.grid_type ? 'UTM' : 'WGS84'}</TableCell>
-                    {pz.grid_type ? (
-                      <TableCell>{pz.utm_coordinates}</TableCell>
+                    <TableCell>{('grid_type' in pz.data && pz.data.grid_type) ? 'UTM' : 'WGS84'}</TableCell>
+                    {'grid_type' in pz.data ? (
+                      pz.data.grid_type ? (
+                        <TableCell>{pz.data.utm_coordinates}</TableCell>
+                      ) : (
+                        <TableCell>{pz.data.coordinates[0]}, {pz.data.coordinates[1]}</TableCell>
+                      )
                     ) : (
-                      <TableCell>{pz.longitude}, {pz.latitude}</TableCell>
+                      <TableCell>{JSON.stringify(pz.data.contour)}</TableCell>
                     )}
-                    <TableCell>{pz.radius}</TableCell>
-                    <TableCell>{pz.altitude}</TableCell>
+                    <TableCell>{'radius' in pz.data ? pz.data.radius : 'なし'}</TableCell>
+                    <TableCell>{pz.data.altitude}</TableCell>
                     <TableCell>
                       <IconButton
                         edge="end"
