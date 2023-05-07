@@ -16,6 +16,7 @@ class ProhibitedZonesController < ApplicationController
   # POST /prohibited_zones
   def create
     @prohibited_zone = ProhibitedZone.new(prohibited_zone_params)
+    @prohibited_zone.data = params[:data]
 
     if @prohibited_zone.save
       render json: @prohibited_zone, status: :created, location: @prohibited_zone
@@ -44,6 +45,6 @@ class ProhibitedZonesController < ApplicationController
     end
 
     def prohibited_zone_params
-      params.require(:prohibited_zone).permit(:area_id, :name, :pz_type, :grid_type, :longitude, :latitude, :radius, :altitude, :utm_coordinates)
+      params.require(:prohibited_zone).permit(:area_id, :name, :pz_type)
     end
 end
