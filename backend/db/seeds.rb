@@ -40,12 +40,7 @@ unless ProhibitedZone.exists?
       area_id: pz['area_id'],
       name: pz['name'],
       pz_type: pz['pz_type'],
-      grid_type: pz['grid_type'],
-      longitude: pz['longitude'],
-      latitude: pz['latitude'],
-      utm_coordinates: pz['utm_coordinates'],
-      radius: pz['radius'],
-      altitude: pz['altitude']
+      data: JSON.parse(pz['data'])
     )
   end
 end
