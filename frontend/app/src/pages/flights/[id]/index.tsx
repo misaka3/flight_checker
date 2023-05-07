@@ -8,6 +8,10 @@ import PageTitle from 'components/PageTitle';
 import { format } from 'date-fns';
 import jaLocale from 'date-fns/locale/ja';
 import TaskForm from 'components/TaskForm'
+import Mapbox from "components/Mapbox";
+import { mgrsToLatLon } from 'utils/coordinateUtils';
+import { createColumnLayer, createIconLayer, createPolygonLayer } from 'utils/layerUtils';
+import { IconLayer } from '@deck.gl/layers/typed';
 
 interface FlightObject {
   id: number;
@@ -26,6 +30,52 @@ interface FlightObject {
   sunset: Date;
   notes: string;
   tasks:TaskObject[];
+  area: AreaObject;
+  event: EventObject;
+}
+
+interface AreaObject {
+  id: number;
+  name: string;
+  utm_zone: string;
+  prohibited_zones: PzObject[];
+}
+
+interface PzObject {
+  id: number;
+  area_id: number;
+  name: string;
+  pz_type: number;
+  data: ColumnLayerObject | PolygonLayerObject;
+}
+
+interface ColumnLayerObject {
+  coordinates: [number, number];
+  radius: number;
+  altitude: number;
+  grid_type: boolean;
+  utm_coordinates: string;
+}
+
+interface PolygonLayerObject {
+  contour: [number, number][];
+  altitude: number;
+  color: [number, number, number, number];
+}
+
+interface PzLayerObject {
+  coordinates: [number, number];
+  radius: number;
+  altitude: number;
+}
+
+interface EventObject {
+  id: number;
+  area_id: number;
+  director: string;
+  name: string;
+  start_term: string;
+  end_term: string;
 }
 
 interface TaskObject {
@@ -47,8 +97,22 @@ const FlightPage = () => {
   const router = useRouter();
   // flight.id
   const { id } = router.query;
-
+  const [layers, setLayers] = useState<IconLayer[]>([]);
+  const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [flight, setFlight] = useState<FlightObject>();
+
+  const getLatLon = (utm_zone: string, clp_coordinates: string): (number[] | undefined) => {
+    const regex = /(\d{4}).+(\d{4})/;
+    const result = clp_coordinates.match(regex);
+    if (result !== null) {
+      const [_, firstFourDigits, secondFourDigits] = result;
+      const utm_coordinates = `${utm_zone}${firstFourDigits}0${secondFourDigits}0`;
+      const wgs_coordinates = mgrsToLatLon(utm_coordinates);
+      return wgs_coordinates;
+    } else {
+      return undefined;
+    }
+  };
 
   const getFlightData = useCallback(async () => {
     try {
@@ -64,6 +128,35 @@ const FlightPage = () => {
   useEffect(() => {
     getFlightData();
   }, [getFlightData]);
+
+  // create layers for mapbox
+  useEffect(() => {
+    if (flight !== undefined) {
+      let new_layers = []
+      const coordinates = getLatLon(flight.area.utm_zone, flight.clp);
+      if (coordinates !== undefined && coordinates.length === 2) {
+        // createIconLayer
+        const coordinatesTuple: [number, number] = [coordinates[1], coordinates[0]];
+        setInitialCoordinates(coordinatesTuple);
+        const iconLayer = createIconLayer({ coordinates: coordinatesTuple });
+        new_layers.push(iconLayer);
+        // createColumnLayer
+        const pzs = flight.area.prohibited_zones;
+        if (pzs.length > 0) {
+          pzs.forEach((pz: PzObject) => {
+            let layer;
+            if (pz.pz_type === 0) {
+              layer = createColumnLayer(pz.data as ColumnLayerObject);
+            } else if (pz.pz_type === 1) {
+              layer = createPolygonLayer(pz.data);
+            }
+            new_layers.push(layer);
+          })
+        }
+        setLayers(new_layers);
+      }
+    }
+  }, [flight]);
   
   if (!flight) return <div>Loading...</div>;
 
@@ -90,7 +183,7 @@ const FlightPage = () => {
             <Typography>Task</Typography>
           </Grid>
           <Grid item xs={4} style={{ border: "1px solid black" }}>
-            <Typography>#1, #2, #3, #4</Typography>
+            {flight.tasks.map((task, index) => `#${task.task_num}${index === flight.tasks.length - 1 ? "" : ", "}`)}
           </Grid>
 
           <Grid item xs={2} style={{ border: "1px solid black" }}>
@@ -171,6 +264,11 @@ const FlightPage = () => {
           <TaskForm key={task.id} task_id={task.id.toString()} />
         ))
       )}
+      <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
+        {layers.length > 0 && initialCoordinates && (
+          <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
+        )}
+      </div>
 
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'flex-start', p: 2 }}>
         <Link href="/events" passHref>

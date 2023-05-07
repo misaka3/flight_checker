@@ -1,23 +1,24 @@
-import { PathLayer } from '@deck.gl/layers/typed';
+import { PathLayer, ColumnLayer, IconLayer, PolygonLayer } from '@deck.gl/layers/typed';
 import { PathStyleExtension } from '@deck.gl/extensions/typed';
-import { ColumnLayer } from "@deck.gl/layers/typed";
 
-interface PzArrayObject {
+interface ColumnLayerObject {
   coordinates: [number, number];
   radius: number;
   altitude: number;
+  grid_type: boolean;
+  utm_coordinates: string;
 }
 
 // cylinder object
-export function createColumnLayer(pz: PzArrayObject) {
+export function createColumnLayer(data: ColumnLayerObject) {
   return new ColumnLayer({
-    id: `column-layer-${pz.coordinates}`,
-    data: [pz],
-    getPosition: (d: PzArrayObject) => d.coordinates,
-    getFillColor: [255, 0, 0, 255 * 0.5],
-    radius: pz.radius,
+    id: 'column-layer',
+    data: [data],
+    getPosition: (d) => d.coordinates,
+    getFillColor: [255, 0, 0, 255 * 0.3],
+    radius: data.radius,
     // change altitude to meters from feet
-    getElevation: (d: PzArrayObject) => d.altitude / 3.28084,
+    getElevation: (d) => d.altitude / 3.28084,
     pickable: true,
   });
 }
@@ -51,4 +52,51 @@ export function createPathLayer(gpxDatas: any[]) {
   });
 
   return pathLayer;
+}
+
+interface iconLayerProps {
+  coordinates: [number, number];
+}
+
+export function createIconLayer({ coordinates }: iconLayerProps) {
+  const data = [{ coordinates: coordinates }];
+  const iconLayer = new IconLayer({
+    id: 'icon-layer',
+    data,
+    pickable: true,
+    iconAtlas: 'https://raw.githubusercontent.com/visgl/deck.gl-data/master/website/icon-atlas.png',
+    iconMapping: { marker: { x: 0, y: 0, width: 128, height: 128, mask: true } },
+    getIcon: d => 'marker',
+  
+    sizeScale: 15,
+    sizeMinPixels: 30,
+    sizeMaxPixels: 30,
+    getPosition: d => d.coordinates,
+    getSize: d => 5,
+    getColor: [0, 140, 0]
+  });
+
+  return iconLayer;
+}
+
+// 多角形PZ
+export function createPolygonLayer(data: {}) {
+  const polygonLayer = new PolygonLayer({
+    id: 'polygon-layer',
+    data: [data],
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d.contour,
+    extruded: true,
+    // change meters from feets
+    getElevation: (d) => d.altitude / 3.28084,
+    getFillColor: d => d.color,
+    getLineColor: d => d.color,
+    getLineWidth: 1
+  });
+
+  return polygonLayer;
 }

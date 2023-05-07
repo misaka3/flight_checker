@@ -24,7 +24,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] })
     longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
     latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 33.265,
     zoom: 14,
-    pitch: 60,
+    pitch: layers.length > 0 ? 60 : 0,
     bearing: 0,
   };
 
@@ -45,7 +45,6 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] })
   
     setViewState(viewport);
   };
-
 
   return (
     layers.length > 0 ? (

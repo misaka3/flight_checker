@@ -4,12 +4,7 @@ class CreateProhibitedZones < ActiveRecord::Migration[7.0]
       t.references :area, null: false
       t.string :name, null: false
       t.integer :pz_type, null: false, default: 0
-      t.boolean :grid_type, null: false, default: 0
-      t.decimal :longitude, precision: 13, scale: 10
-      t.decimal :latitude, precision: 13, scale: 10
-      t.string :utm_coordinates
-      t.integer :radius
-      t.integer :altitude
+      t.json :data, null: false
 
       t.timestamps
     end

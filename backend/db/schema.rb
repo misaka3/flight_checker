@@ -10,9 +10,10 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_02_113416) do
+ActiveRecord::Schema[7.0].define(version: 2023_05_05_144613) do
   create_table "areas", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
+    t.string "utm_zone"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -61,20 +62,26 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_02_113416) do
     t.bigint "area_id", null: false
     t.string "name", null: false
     t.integer "pz_type", default: 0, null: false
-    t.boolean "grid_type", default: false, null: false
-    t.decimal "longitude", precision: 13, scale: 10
-    t.decimal "latitude", precision: 13, scale: 10
-    t.string "utm_coordinates"
-    t.integer "radius"
-    t.integer "altitude"
+    t.json "data", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["area_id"], name: "index_prohibited_zones_on_area_id"
   end
 
+  create_table "task_rules", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "task_type_id", null: false
+    t.string "rule_num", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["task_type_id"], name: "index_task_rules_on_task_type_id"
+  end
+
   create_table "task_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name", null: false
+    t.string "en_name", null: false
     t.string "short_name", null: false
+    t.string "rule_num", null: false
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
