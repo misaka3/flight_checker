@@ -98,7 +98,7 @@ const App: React.FC = () => {
         grid_type: utmEnabled,
         utm_coordinates: utmCoordinates
       }
-    } else if (pz.pz_type === 1 || pz.pz_type === 2) {
+    } else if (pz.pz_type === 1 || pz.pz_type === 2 || pz.pz_type === 3) {
       const contour = coordinates.map(coord => [parseFloat(coord.x), parseFloat(coord.y)]);
       const color = pzTypes.find(pzType => pzType.value === pz.pz_type)?.color;
       data = { contour: contour, altitude: polygonPz.altitude, color: color };

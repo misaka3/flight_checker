@@ -81,6 +81,8 @@ const AreaEdit: React.FC = () => {
             layer = createColumnLayer(pz.data as ColumnLayerObject);
           } else if (pz.pz_type === 1 || pz.pz_type === 2) {
             layer = createPolygonLayer(pz.data);
+          } else if (pz.pz_type === 3) {
+            layer = createPolygonLayer(pz.data);
           }
           pz_array.push(layer);
         })
