@@ -28,7 +28,7 @@ interface PolygonPzData {
 const pzTypes: PzType[] = [
   { name: '円柱型PZ(レッドPZ)', value: 0, color: [255, 0, 0, 255 * 0.3] },
   { name: '多角形PZ(レッドPZ)', value: 1, color: [255, 0, 0, 255 * 0.3] },
-  { name: '多角形PZ(イエローPZ)', value: 2, color: [255, 255, 0, 255 * 0.3]  },
+  { name: '多角形PZ(イエローPZ)', value: 2, color: [255, 241, 0, 200]  },
   { name: '多角形PZ(ブルーPZ)', value: 3, color: [0, 0, 255, 255 * 0.3]  },
 ];
 
@@ -98,7 +98,7 @@ const App: React.FC = () => {
         grid_type: utmEnabled,
         utm_coordinates: utmCoordinates
       }
-    } else if (pz.pz_type === 1) {
+    } else if (pz.pz_type === 1 || pz.pz_type === 2) {
       const contour = coordinates.map(coord => [parseFloat(coord.x), parseFloat(coord.y)]);
       const color = pzTypes.find(pzType => pzType.value === pz.pz_type)?.color;
       data = { contour: contour, altitude: polygonPz.altitude, color: color };
