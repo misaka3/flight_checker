@@ -14,10 +14,10 @@ export function mgrsToLatLon(mgrsString: string): [number, number] {
 }
 
 // mapboxにlayerを追加する際の初期表示位置取得
-export function getInitialCoordinates(features: any[]): number[] | null {
-  if (features.length === 0) return null;
+export function getInitialCoordinates(features: any[]): [number, number] | undefined {
+  if (features.length === 0) return undefined;
   const firstFeature = features[0];
   const coordinates = firstFeature.geometry.coordinates;
-  if (coordinates.length === 0) return null;
+  if (coordinates.length === 0) return undefined;
   return coordinates[0]; // [longitude(number), latitude(number), altitude(number)]
 };
