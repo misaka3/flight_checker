@@ -8,13 +8,14 @@ import { Box, Button, TextField, Grid, FormControl, InputLabel, Select, MenuItem
 import { getInitialCoordinates } from 'utils/coordinateUtils'
 import { createPathLayer, createPzLayers } from 'utils/layerUtils';
 
-const DeckGL = dynamic(() => import('@deck.gl/react/typed'), { ssr: false });
+// const DeckGL = dynamic(() => import('@deck.gl/react/typed'), { ssr: false });
 
 const GpxPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [areas, setAreas] = useState([]);
   const [areaId, setAreaId] = useState<number>(0);
   const [layers, setLayers] = useState<any[]>([]);
+  const [gpxLayer, setGpxLayer] = useState<any>();
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
 
   const fetchAreas = async () => {
@@ -31,19 +32,20 @@ const GpxPage = () => {
   };
   
   const handleAreaChange = (e: SelectChangeEvent<number>) => {
-    console.log("e.target");
-    console.log(e.target);
     setAreaId(Number(e.target.value));
   };
 
-  const displayLayers = async () => {
+  const displayPzLayers = async () => {
+    let new_layers = [gpxLayer];
+
     try {
       const response = await axios.get(`/areas/${areaId}`);
 
       if (response.data.prohibited_zones) {
         const pz_layers = createPzLayers(response.data.prohibited_zones);
-        setLayers(pz_layers);
+        pz_layers.map(pz_layer => new_layers.push(pz_layer));
       }
+      setLayers(new_layers);
     } catch (error) {
       console.error(error);
     }
@@ -53,6 +55,8 @@ const GpxPage = () => {
     if (!file) return;
 
     const reader = new FileReader();
+    const old_layers = layers;
+    let new_layers: any[] = [];
     reader.onload = (event) => {
       const gpxText = event.target?.result;
       if (typeof gpxText === 'string') {
@@ -60,9 +64,12 @@ const GpxPage = () => {
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
         const layer = createPathLayer(geoJSONData.features);
-        setLayers([layer]);
+        setGpxLayer(layer);
+        new_layers.push(layer);
+        new_layers = new_layers.concat(old_layers.slice(1));
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
       }
+      setLayers([new_layers]);
     };
     reader.readAsText(file);
   };
@@ -131,7 +138,7 @@ const GpxPage = () => {
           </FormControl>
         </Grid>
         <Grid item xs={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-          <Button onClick={displayLayers} variant="contained" color="primary">
+          <Button onClick={displayPzLayers} variant="contained" color="primary">
             PZを描画
           </Button>
         </Grid>
