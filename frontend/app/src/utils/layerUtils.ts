@@ -9,6 +9,20 @@ interface ColumnLayerObject {
   utm_coordinates: string;
 }
 
+interface PzObject {
+  id: number;
+  area_id: number;
+  name: string;
+  pz_type: number;
+  data: ColumnLayerObject | PolygonLayerObject;
+}
+
+interface PolygonLayerObject {
+  contour: [number, number][];
+  altitude: number;
+  color: [number, number, number, number];
+}
+
 // cylinder object
 export function createColumnLayer(data: ColumnLayerObject) {
   return new ColumnLayer({
@@ -80,7 +94,7 @@ export function createIconLayer({ coordinates }: iconLayerProps) {
 }
 
 // 多角形PZ
-export function createPolygonLayer(data: {}) {
+export function createPolygonLayer(data: PolygonLayerObject) {
   const polygonLayer = new PolygonLayer({
     id: 'polygon-layer',
     data: [data],
@@ -99,4 +113,22 @@ export function createPolygonLayer(data: {}) {
   });
 
   return polygonLayer;
+}
+
+// PZのlayers作成関数
+export function createPzLayers(datas: PzObject[]) {
+  const layers: any[] = [];
+  datas.forEach((data: PzObject) => {
+    let layer;
+    if (data.pz_type === 0) {
+      layer = createColumnLayer(data.data as ColumnLayerObject);
+    } else if (data.pz_type === 1 || data.pz_type === 2) {
+      layer = createPolygonLayer(data.data as PolygonLayerObject);
+    } else if (data.pz_type === 3) {
+      layer = createPolygonLayer(data.data as PolygonLayerObject);
+    }
+    layers.push(layer);
+  })
+
+  return layers;
 }

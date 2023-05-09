@@ -4,18 +4,13 @@ import axios from "../../../../lib/axiosInstance";
 import { Alert, AlertColor, Box, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Paper, IconButton, Typography, Grid, Snackbar } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Mapbox from "components/Mapbox";
-import { createColumnLayer, createPolygonLayer } from "utils/layerUtils";
+import { createPzLayers } from "utils/layerUtils";
 import PageTitle from 'components/PageTitle';
 
 interface Area {
   id: number;
   name: string;
   prohibited_zones: PzObject[];
-}
-interface PzArrayObject {
-  coordinates: [number, number];
-  radius: number;
-  altitude: number;
 }
 
 interface PzObject {
@@ -45,7 +40,7 @@ const AreaEdit: React.FC = () => {
   const { id } = router.query;
   const { alert } = router.query;
   const [area, setArea] = useState<Area>();
-  const [pzs, setPzs] = useState([] as PzArrayObject[]);
+  const [layers, setLayers] = useState<any[]>([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor | null>(null);
 
@@ -73,27 +68,14 @@ const AreaEdit: React.FC = () => {
       const response = await axios.get(`/areas/${id}`);
       setArea(response.data);
 
-      let pz_array: any[] = []
       if (response.data.prohibited_zones) {
-        response.data.prohibited_zones.forEach((pz: PzObject) => {
-          let layer;
-          if (pz.pz_type === 0) {
-            layer = createColumnLayer(pz.data as ColumnLayerObject);
-          } else if (pz.pz_type === 1 || pz.pz_type === 2) {
-            layer = createPolygonLayer(pz.data);
-          } else if (pz.pz_type === 3) {
-            layer = createPolygonLayer(pz.data);
-          }
-          pz_array.push(layer);
-        })
-        setPzs(pz_array);
+        const pz_layers = createPzLayers(response.data.prohibited_zones);
+        setLayers(pz_layers);
       }
     } catch (error) {
       console.error(error);
     }
   }, [id]);
-
-  const layers = pzs ? pzs : [];
   
   // const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
   const initialCoordinates = [130.2710684096029, 33.27189685159762];

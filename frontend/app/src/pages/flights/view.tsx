@@ -6,56 +6,15 @@ import { gpx } from '@tmcw/togeojson';
 import axios from "../../../lib/axiosInstance";
 import { Box, Button, TextField, Grid, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { getInitialCoordinates } from 'utils/coordinateUtils'
-import { createColumnLayer, createPathLayer, createPolygonLayer } from 'utils/layerUtils';
+import { createPathLayer, createPzLayers } from 'utils/layerUtils';
 
 const DeckGL = dynamic(() => import('@deck.gl/react/typed'), { ssr: false });
 
-interface GPXType {
-  type: string;
-  features: any[];
-}
-interface Area {
-  id: number;
-  name: string;
-  prohibited_zones: PzObject[];
-}
-
-interface PzObject {
-  id: number;
-  area_id: number;
-  name: string;
-  pz_type: number;
-  data: ColumnLayerObject | PolygonLayerObject;
-}
-
-interface ColumnLayerObject {
-  coordinates: [number, number];
-  radius: number;
-  altitude: number;
-  grid_type: boolean;
-  utm_coordinates: string;
-}
-
-interface PolygonLayerObject {
-  contour: [number, number][];
-  altitude: number;
-  color: [number, number, number, number];
-}
-
-interface PzArrayObject {
-  coordinates: [number, number];
-  radius: number;
-  altitude: number;
-}
-
 const GpxPage = () => {
-  const [gpxData, setGpxData] = useState<GPXType | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [areas, setAreas] = useState([]);
   const [areaId, setAreaId] = useState<number>(0);
-  const [area, setArea] = useState<Area>();
-  const [pzs, setPzs] = useState([]);
-  const [layers, setLayers] = useState([]);
+  const [layers, setLayers] = useState<any[]>([]);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
 
   const fetchAreas = async () => {
@@ -80,35 +39,15 @@ const GpxPage = () => {
   const displayLayers = async () => {
     try {
       const response = await axios.get(`/areas/${areaId}`);
-      // setArea(response.data);
 
-      let pz_array: any[] = []
       if (response.data.prohibited_zones) {
-        response.data.prohibited_zones.forEach((pz: PzObject) => {
-          let layer;
-          if (pz.pz_type === 0) {
-            layer = createColumnLayer(pz.data as ColumnLayerObject);
-          } else if (pz.pz_type === 1 || pz.pz_type === 2) {
-            layer = createPolygonLayer(pz.data);
-          } else if (pz.pz_type === 3) {
-            layer = createPolygonLayer(pz.data);
-          }
-          pz_array.push(layer);
-        })
-        setPzs(pz_array);
+        const pz_layers = createPzLayers(response.data.prohibited_zones);
+        setLayers(pz_layers);
       }
     } catch (error) {
       console.error(error);
     }
   };
-  useEffect(() => {
-    console.log("layers");
-    console.log(layers);
-    const new_layers = []
-    new_layers.push(layers[0]);
-    pzs.map(pz => (new_layers.push(pz)));
-    setLayers(new_layers);
-  }, [pzs]);
 
   const handleButtonClick = () => {
     if (!file) return;
@@ -120,7 +59,6 @@ const GpxPage = () => {
         const parser = new DOMParser();
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
-        // setGpxData(geoJSONData);
         const layer = createPathLayer(geoJSONData.features);
         setLayers([layer]);
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
