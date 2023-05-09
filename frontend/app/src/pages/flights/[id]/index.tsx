@@ -10,7 +10,7 @@ import jaLocale from 'date-fns/locale/ja';
 import TaskForm from 'components/TaskForm'
 import Mapbox from "components/Mapbox";
 import { mgrsToLatLon } from 'utils/coordinateUtils';
-import { createColumnLayer, createIconLayer, createPolygonLayer } from 'utils/layerUtils';
+import { createIconLayer, createPzLayers } from 'utils/layerUtils';
 import { IconLayer } from '@deck.gl/layers/typed';
 
 interface FlightObject {
@@ -61,12 +61,6 @@ interface PolygonLayerObject {
   contour: [number, number][];
   altitude: number;
   color: [number, number, number, number];
-}
-
-interface PzLayerObject {
-  coordinates: [number, number];
-  radius: number;
-  altitude: number;
 }
 
 interface EventObject {
@@ -140,18 +134,10 @@ const FlightPage = () => {
         setInitialCoordinates(coordinatesTuple);
         const iconLayer = createIconLayer({ coordinates: coordinatesTuple });
         new_layers.push(iconLayer);
-        // createColumnLayer
         const pzs = flight.area.prohibited_zones;
         if (pzs.length > 0) {
-          pzs.forEach((pz: PzObject) => {
-            let layer;
-            if (pz.pz_type === 0) {
-              layer = createColumnLayer(pz.data as ColumnLayerObject);
-            } else if (pz.pz_type === 1) {
-              layer = createPolygonLayer(pz.data);
-            }
-            new_layers.push(layer);
-          })
+          const pz_layers = createPzLayers(pzs);
+          pz_layers.map(pz_layer => new_layers.push(pz_layer));
         }
         setLayers(new_layers);
       }
