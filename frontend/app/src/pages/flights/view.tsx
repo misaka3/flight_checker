@@ -5,7 +5,7 @@ import { DOMParser } from 'xmldom';
 import { gpx } from '@tmcw/togeojson';
 import axios from "../../../lib/axiosInstance";
 import { Box, Button, TextField, Grid, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
-import { getInitialCoordinates } from 'utils/coordinateUtils'
+import { getInitialCoordinates } from 'utils/coordinateUtils';
 import { createPathLayer, createPzLayers } from 'utils/layerUtils';
 
 // const DeckGL = dynamic(() => import('@deck.gl/react/typed'), { ssr: false });
