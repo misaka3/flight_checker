@@ -23,16 +23,15 @@ export function getInitialCoordinates(features: any[]): [number, number] | undef
 };
 
 // UTMグリッドの抽出後10桁の数字(文字列)を返す関数
-export function getUtmCoordinates(str: string): string | undefined {
+export function getUtmCoordinates(str: string): string[] {
   console.log("str:", str);
-  if (str.length === 0) return undefined;
-  const regex = /(\d{4}).+(\d{4})/;
-  const result = str.match(regex);
-  console.log("result:", result);
-  if (result !== null) {
+  const regex = /(\d{4}).+(\d{4})/g;
+  const results: string[] = [];
+  let result;
+  while ((result = regex.exec(str)) !== null) {
+    console.log("result:", result);
     const [_, firstFourDigits, secondFourDigits] = result;
-    return `${firstFourDigits}0${secondFourDigits}0`;
-  } else {
-    return undefined;
+    results.push(`${firstFourDigits}0${secondFourDigits}0`);
   }
-};
+  return results;
+}

@@ -167,25 +167,54 @@ export function createTaskLayers(utm_zone: string, tasks: TaskObject[]) {
     if ([2,3,4,8,9].includes(task.task_type_id)) {
       // iconLayer
       const utm_coordinates = getUtmCoordinates(task.description);
-      const wgs_coordinates = mgrsToLatLon(`${utm_zone}${utm_coordinates}`);
-      const task_icon_layer = createIconLayer({ coordinates: wgs_coordinates });
-      layers.push(task_icon_layer);
-      // columnLayer
-      if (task.mma !== null) {
-        const mma = getMmaNumber(task.mma);
-        if (mma !== null) {
-          const columnLayer: ColumnLayerObject = {
-            coordinates: wgs_coordinates,
-            radius: mma,
-            altitude: 10,
-            grid_type: true,
-            utm_coordinates: utm_coordinates as string,
-            color: [0, 0, 255, 255*0.3]
+      if (utm_coordinates.length === 1) {
+        const wgs_coordinates = mgrsToLatLon(`${utm_zone}${utm_coordinates[0]}`);
+        const task_icon_layer = createIconLayer({ coordinates: wgs_coordinates });
+        layers.push(task_icon_layer);
+        // columnLayer
+        if (task.mma !== null) {
+          const mma = getMmaNumber(task.mma);
+          if (mma !== null) {
+            const columnLayer: ColumnLayerObject = {
+              coordinates: wgs_coordinates,
+              radius: mma,
+              altitude: 10,
+              grid_type: true,
+              utm_coordinates: utm_coordinates[0] as string,
+              color: [0, 0, 255, 255*0.3]
+            }
+            const task_column_layer = createColumnLayer(columnLayer);
+    
+            layers.push(task_column_layer);
           }
-          const task_column_layer = createColumnLayer(columnLayer);
-  
-          layers.push(task_column_layer);
         }
+      } else if (utm_coordinates.length > 1) {
+        const wgs_coordinates: [number, number][] = [];
+        // const task_icon_layers = [];
+        utm_coordinates.map(utm_coordinate => {
+          const wgs_coordinate = mgrsToLatLon(`${utm_zone}${utm_coordinate}`);
+          wgs_coordinates.push(wgs_coordinate);
+          const task_icon_layer = createIconLayer({ coordinates: wgs_coordinate });
+          layers.push(task_icon_layer);
+          // columnLayer
+          // if (task.mma === null) {
+          //   // 複数のmmaを取得して、wgs_coordinatesの要素と合わせて使う
+          //   const mmas = getMmaNumbers(task.description);
+          //   if (mmas.length > 0) {
+          //     const columnLayer: ColumnLayerObject = {
+          //       coordinates: wgs_coordinates,
+          //       radius: mma,
+          //       altitude: 10,
+          //       grid_type: true,
+          //       utm_coordinates: utm_coordinates[0] as string,
+          //       color: [0, 0, 255, 255*0.3]
+          //     }
+          //     const task_column_layer = createColumnLayer(columnLayer);
+      
+          //     layers.push(task_column_layer);
+          //   }
+          // }
+        });
       }
     }
   })
