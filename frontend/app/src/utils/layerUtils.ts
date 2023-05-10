@@ -8,6 +8,7 @@ interface ColumnLayerObject {
   altitude: number;
   grid_type: boolean;
   utm_coordinates: string;
+  color?: [number, number, number, number];
 }
 
 interface PzObject {
@@ -30,7 +31,7 @@ export function createColumnLayer(data: ColumnLayerObject) {
     id: 'column-layer',
     data: [data],
     getPosition: (d) => d.coordinates,
-    getFillColor: [255, 0, 0, 255 * 0.3],
+    getFillColor: (d) => d.color || [255, 0, 0, 255 * 0.3],
     radius: data.radius,
     // change altitude to meters from feet
     getElevation: (d) => d.altitude / 3.28084,
@@ -178,7 +179,8 @@ export function createTaskLayers(utm_zone: string, tasks: TaskObject[]) {
             radius: mma,
             altitude: 10,
             grid_type: true,
-            utm_coordinates: utm_coordinates as string
+            utm_coordinates: utm_coordinates as string,
+            color: [0, 0, 255, 255*0.3]
           }
           const task_column_layer = createColumnLayer(columnLayer);
   
