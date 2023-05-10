@@ -86,9 +86,9 @@ const App: React.FC = () => {
       let currentLongitude = longitude;
 
       if (utmEnabled) {
-        const latlon = mgrsToLatLon(utmCoordinates);
-        currentLatitude = latlon[0].toString();
-        currentLongitude = latlon[1].toString();
+        const coordinates = mgrsToLatLon(utmCoordinates);
+        currentLongitude = coordinates[0].toString();
+        currentLatitude = coordinates[1].toString();
       }
 
       data = {
