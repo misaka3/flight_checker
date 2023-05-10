@@ -121,7 +121,7 @@ export function createPzLayers(datas: PzObject[]) {
   const layers: any[] = [];
   datas.forEach((data: PzObject) => {
     let layer;
-    if (data.pz_type === 0) {
+    if (data.pz_type === 0 || data.pz_type === 4) {
       layer = createColumnLayer(data.data as ColumnLayerObject);
     } else if (data.pz_type === 1 || data.pz_type === 2) {
       layer = createPolygonLayer(data.data as PolygonLayerObject);
