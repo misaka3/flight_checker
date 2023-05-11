@@ -29,7 +29,7 @@ const pzTypes: PzType[] = [
   { name: '円柱型PZ(レッドPZ)', value: 0, color: [255, 0, 0, 255 * 0.3] },
   { name: '円柱型PZ(イエローPZ)', value: 4, color: [255, 241, 0, 255 * 0.5] },
   { name: '多角形PZ(レッドPZ)', value: 1, color: [255, 0, 0, 255 * 0.3] },
-  { name: '多角形PZ(イエローPZ)', value: 2, color: [255, 241, 0, 200]  },
+  { name: '多角形PZ(イエローPZ)', value: 2, color: [255, 241, 0, 255 * 0.5]  },
   { name: '多角形PZ(ブルーPZ)', value: 3, color: [0, 0, 255, 255 * 0.3]  },
 ];
 

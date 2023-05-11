@@ -51,7 +51,7 @@ const GpxPage = () => {
     }
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (altitudeFlg: boolean) => {
     if (!file) return;
 
     const reader = new FileReader();
@@ -63,7 +63,7 @@ const GpxPage = () => {
         const parser = new DOMParser();
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
-        const layer = createPathLayer(geoJSONData.features);
+        const layer = createPathLayer(geoJSONData.features, altitudeFlg);
         setGpxLayer(layer);
         new_layers.push(layer);
         new_layers = new_layers.concat(old_layers.slice(1));
@@ -113,9 +113,14 @@ const GpxPage = () => {
         </Grid>
       </Box>
       <Grid container justifyContent="flex-end" mb={4}>
-        <Grid item>
-          <Button onClick={handleButtonClick} variant="contained" color="primary" >
+        <Grid item style={{ marginRight: "16px"}}>
+          <Button onClick={() => handleButtonClick(false)}  variant="contained" color="primary" >
             航跡図を描画
+          </Button>
+        </Grid>
+        <Grid item>
+          <Button onClick={() => handleButtonClick(true)}  variant="contained" color="primary" >
+            高度を補正して描画
           </Button>
         </Grid>
       </Grid>
