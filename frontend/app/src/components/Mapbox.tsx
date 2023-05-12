@@ -9,6 +9,7 @@ const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 interface MapboxProps {
   layers?: any[];
   initialCoordinates?: number[];
+  initialViewState?: ViewStateType;
 }
 
 interface ViewStateType {
@@ -19,20 +20,17 @@ interface ViewStateType {
   bearing: number;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [] }) => {
-  const initialViewState: ViewStateType = {
-    longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
-    latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 33.265,
+const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialViewState }) => {
+  const defaultViewState: ViewStateType = {
+    longitude: 130.300,
+    latitude: 33.265,
     zoom: 14,
     pitch: layers.length > 0 ? 60 : 0,
     bearing: 0,
   };
+  const initViewState = initialViewState || defaultViewState;
 
-  const [viewState, setViewState] = useState<ViewStateType>(initialViewState);
-
-  useEffect(() => {
-    const mgrsString = latLonToMGRS(viewState.latitude, viewState.longitude);
-  }, [viewState]);
+  const [viewState, setViewState] = useState<ViewStateType>(initViewState);
 
   const handleViewportChange = (params: { viewState: ViewState; viewId: string }) => {
     const viewport: ViewStateType = {

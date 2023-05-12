@@ -1,9 +1,9 @@
 import EventForm from "components/pages/EventForm"
 
-const EventsEditPage = () => {
+const EventsNewPage = () => {
   return (
     <EventForm />
   );
 }
 
-export default EventsEditPage;
+export default EventsNewPage;
