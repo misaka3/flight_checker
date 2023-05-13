@@ -35,6 +35,14 @@ interface PolygonLayerObject {
   color: [number, number, number, number];
 }
 
+interface ViewStateType {
+  longitude: number;
+  latitude: number;
+  zoom: number;
+  pitch: number;
+  bearing: number;
+}
+
 const AreaEdit: React.FC = () => {
   const router = useRouter();
   const { id } = router.query;
@@ -43,6 +51,7 @@ const AreaEdit: React.FC = () => {
   const [layers, setLayers] = useState<any[]>([]);
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor | null>(null);
+  const [initialViewState, setInitialViewState] = useState<ViewStateType>();
 
   const showAlert = (severity: AlertColor) => {
     setAlertSeverity(severity);
@@ -66,6 +75,7 @@ const AreaEdit: React.FC = () => {
   const getAreaData = useCallback(async () => {
     try {
       const response = await axios.get(`/areas/${id}`);
+      setInitialViewState(response.data.initial_viewstate);
       setArea(response.data);
 
       if (response.data.prohibited_zones) {
@@ -76,9 +86,6 @@ const AreaEdit: React.FC = () => {
       console.error(error);
     }
   }, [id]);
-  
-  // const initialCoordinates = pzs.length > 0 ? pzs[0].coordinates : [];
-  const initialCoordinates = [130.2710684096029, 33.27189685159762];
 
   useEffect(() => {
     getAreaData();
@@ -174,8 +181,8 @@ const AreaEdit: React.FC = () => {
         </TableContainer>
       </Box>
       <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
-        {layers.length > 0 && initialCoordinates && (
-          <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
+        {layers.length > 0 && initialViewState && (
+          <Mapbox layers={layers} initialViewState={initialViewState} />
         )}
       </div>
       <Grid container justifyContent="flex-start">
