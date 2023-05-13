@@ -20,15 +20,15 @@ interface ViewStateType {
   bearing: number;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialViewState }) => {
+const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], initialViewState }) => {
   const defaultViewState: ViewStateType = {
-    longitude: 130.300,
-    latitude: 33.265,
+    longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
+    latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 33.265,
     zoom: 14,
     pitch: layers.length > 0 ? 60 : 0,
     bearing: 0,
   };
-  const initViewState = initialViewState || defaultViewState;
+  const initViewState = initialViewState !== undefined ? initialViewState : defaultViewState;
 
   const [viewState, setViewState] = useState<ViewStateType>(initViewState);
 
@@ -49,7 +49,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialViewState }) => {
       <div style={{ width: "100%", height: "100%" }}>
         <DeckGL
           layers={layers}
-          initialViewState={initialViewState}
+          initialViewState={initViewState}
           controller={true}
           onViewStateChange={handleViewportChange as any}
         >
