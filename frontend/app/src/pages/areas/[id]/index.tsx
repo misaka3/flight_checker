@@ -180,7 +180,7 @@ const AreaEdit: React.FC = () => {
           </Table>
         </TableContainer>
       </Box>
-      <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
+      <div style={{ flexGrow: 1, position: "relative", height: "600px", marginBottom: "32px" }}>
         {layers.length > 0 && initialViewState && (
           <Mapbox layers={layers} initialViewState={initialViewState} />
         )}

@@ -64,7 +64,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
               <FormControlLabel value="mapbox://styles/mapbox/outdoors-v11" control={<Radio />} label="outdoors" />
             </RadioGroup>
           </div>
-          <div style={{ height: "90%", position: "absolute", top: 40, left: 0, right: 0 }}>
+          <div style={{ height: "90%", position: "absolute", top: 60, left: 0, right: 0 }}>
             <DeckGL
               layers={layers}
               initialViewState={initViewState}
