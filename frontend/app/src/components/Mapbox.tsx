@@ -46,8 +46,6 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
   };
 
   const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("event.target.value");
-    console.log(event.target.value);
     setSelectedStyle(event.target.value);
   };
 
