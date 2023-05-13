@@ -261,7 +261,7 @@ const FlightPage = () => {
           <TaskForm key={task.id} task_id={task.id.toString()} />
         ))
       )}
-      <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
+      <div style={{ flexGrow: 1, position: "relative", height: "600px", marginBottom: "32px" }}>
         {layers.length > 0 && initialCoordinates && (
           <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
         )}
