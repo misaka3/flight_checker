@@ -1,4 +1,4 @@
-import { PathLayer, ColumnLayer, IconLayer, PolygonLayer } from '@deck.gl/layers/typed';
+import { PathLayer, ColumnLayer, IconLayer, PolygonLayer, ScatterplotLayer } from '@deck.gl/layers/typed';
 import { PathStyleExtension } from '@deck.gl/extensions/typed';
 import { getUtmCoordinates, mgrsToLatLon } from 'utils/coordinateUtils';
 
@@ -52,10 +52,53 @@ export function altitudeToColor(altitude: number): [number, number, number] {
   return [r, g, b];
 }
 
+function flattenGpxData(gpxDatas: any[], firstAltitude: number) {
+  return gpxDatas.flatMap(d =>
+    d.geometry.coordinates.map((coordinate: [number, number, number]) => ({
+      ...d,
+      geometry: {
+        ...d.geometry,
+        coordinates: [coordinate[0], coordinate[1], coordinate[2] - firstAltitude],
+      },
+    }))
+  );
+}
+
+export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, altitudeFlg = false ) {
+  const firstAltitude = altitudeFlg ? gpxDatas[0].geometry.coordinates[0][2] : 0;
+  const flattenedGpxDatas = flattenGpxData(gpxDatas, firstAltitude);
+  const scatterplotLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer',
+    data: flattenedGpxDatas,
+    pickable: true,
+    opacity: 0.8,
+    stroked: true,
+    filled: true,
+    radiusMinPixels: 1,
+    radiusMaxPixels: 100,
+    lineWidthMinPixels: 1,
+    getPosition: (d: any) => d.geometry.coordinates,
+    getRadius: 2,
+    getColor: (d: any) => altitudeToColor(d.geometry.coordinates[2] * 3.28084),
+    onHover: (info: any) => handleHover(info, setHoverInfo)
+  });
+
+  return scatterplotLayer;
+}
+
+function handleHover(info: any, setHoverInfo: any) {
+  const {object, x, y} = info;
+  if (object) {
+    const coordinate = object.geometry.coordinates;
+    setHoverInfo({coordinate, x, y});
+  } else {
+    setHoverInfo(null);
+  }
+}
+
 // gpx track
 export function createPathLayer(gpxDatas: any[], altitudeFlg = false) {
   const firstAltitude = altitudeFlg ? gpxDatas[0].geometry.coordinates[0][2] : 0;
-  console.log("firstAltitude:", firstAltitude,"(m)");
   const pathLayer = new PathLayer({
     id: 'path-layer',
     data: gpxDatas,
@@ -68,9 +111,9 @@ export function createPathLayer(gpxDatas: any[], altitudeFlg = false) {
       d.geometry.coordinates.map((coordinate: any) =>
         altitudeToColor(coordinate[2] * 3.28084), // meters to feet
       ),
-    getWidth: 20,
+    getWidth: 10,
     extensions: [new PathStyleExtension({ dash: true })],
-    getDashArray: (d: any) => [0, 0],
+    getDashArray: (d: any) => [0, 0]
   });
 
   return pathLayer;

@@ -6,7 +6,7 @@ import { gpx } from '@tmcw/togeojson';
 import axios from "../../../lib/axiosInstance";
 import { Box, Button, TextField, Grid, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
-import { createPathLayer, createPzLayers } from 'utils/layerUtils';
+import { createPathLayer, createPzLayers, createScatterplotLayer } from 'utils/layerUtils';
 
 // const DeckGL = dynamic(() => import('@deck.gl/react/typed'), { ssr: false });
 
@@ -17,6 +17,7 @@ const GpxPage = () => {
   const [layers, setLayers] = useState<any[]>([]);
   const [gpxLayer, setGpxLayer] = useState<any>();
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
+  const [hoverInfo, setHoverInfo] = useState(null);
 
   const fetchAreas = async () => {
     try {
@@ -63,9 +64,11 @@ const GpxPage = () => {
         const parser = new DOMParser();
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
-        const layer = createPathLayer(geoJSONData.features, altitudeFlg);
-        setGpxLayer(layer);
-        new_layers.push(layer);
+        const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
+        setGpxLayer(path_layer);
+        new_layers.push(path_layer);
+        const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
+        new_layers.push(scatterplot_layer);
         new_layers = new_layers.concat(old_layers.slice(1));
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
       }
@@ -150,7 +153,7 @@ const GpxPage = () => {
       </Grid>
       <div style={{ flexGrow: 1, position: "relative", height: "600px", marginBottom: "32px" }}>
         {layers.length > 0 && initialCoordinates && (
-          <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
+          <Mapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
         )}
       </div>
     </div>
