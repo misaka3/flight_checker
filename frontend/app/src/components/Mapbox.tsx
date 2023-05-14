@@ -10,6 +10,7 @@ interface MapboxProps {
   layers?: any[];
   initialCoordinates?: number[];
   initialViewState?: ViewStateType;
+  hoverInfo?: any;
 }
 
 interface ViewStateType {
@@ -20,7 +21,7 @@ interface ViewStateType {
   bearing: number;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], initialViewState }) => {
+const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], initialViewState, hoverInfo }) => {
   const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
   const defaultViewState: ViewStateType = {
     longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
@@ -68,6 +69,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
               initialViewState={initViewState}
               controller={true}
               onViewStateChange={handleViewportChange as any}
+              getTooltip={({object}) => object && `緯度: ${hoverInfo?.coordinate[1]}, 経度: ${hoverInfo?.coordinate[0]}, 高度: ${(hoverInfo?.coordinate[2] * 3.28084).toFixed(2)}ft`}
             >
               <ReactMap
                 {...viewState}
