@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import dynamic from 'next/dynamic';
+// import dynamic from 'next/dynamic';
 import Mapbox from 'components/Mapbox';
 import { DOMParser } from 'xmldom';
 import { gpx } from '@tmcw/togeojson';
@@ -19,34 +19,28 @@ const GpxPage = () => {
   const [scatterplotLayer, setScatterplotLayer] = useState<any>();
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
-  const [data, setData] = useState([]);
   const [playing, setPlaying] = useState(false);
-  const [geoJSONData, setGeoJSONData] = useState<Array>([]);
-  const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
+  const [geoJSONData, setGeoJSONData] = useState<Array<any>>([]);
 
-  const handlePlayClick = (flg: boolean) => {
+  const gpxAnimationSwitch = (flg: boolean) => {
     setPlaying(flg);
   };
 
+  // gpxLayer(scatterplotLayer)'s timelapsed animation
   useEffect(() => {
     let timer: NodeJS.Timeout;
+    let currentFrameIndex = 0;
     if (playing && geoJSONData && currentFrameIndex < geoJSONData[0].geometry.coordinates.length) {
       timer = setInterval(() => {
-        setCurrentFrameIndex((index) => index + 1);
-      }, 500);
+        currentFrameIndex += 1;
+        let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
+        geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, currentFrameIndex);
+        const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, false);
+        setLayers([scatterplot_layer]);
+      }, 100);
     }
     return () => clearInterval(timer);
-  }, [playing, currentFrameIndex]);
-
-  useEffect(() => {
-    if (geoJSONData.length > 0) {
-      // createScatterplotLayerに0-indexのgpxDatasを渡す
-      let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
-      geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, currentFrameIndex);
-      const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, false);
-      setLayers([scatterplot_layer]);
-    }
-  }, [currentFrameIndex]);
+  }, [playing, geoJSONData]);
 
   const fetchAreas = async () => {
     try {
@@ -182,12 +176,12 @@ const GpxPage = () => {
       </Grid>
       <Grid container mb={2}>
         <Grid item xs={6}>
-          <Button onClick={() => handlePlayClick(true)} variant="contained" color="primary">
+          <Button onClick={() => gpxAnimationSwitch(true)} variant="contained" color="primary">
             再生
           </Button>
         </Grid>
         <Grid item xs={6}>
-          <Button onClick={() => handlePlayClick(false)} variant="contained" color="primary">
+          <Button onClick={() => gpxAnimationSwitch(false)} variant="contained" color="primary">
             停止
           </Button>
         </Grid>
