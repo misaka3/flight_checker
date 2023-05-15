@@ -13,12 +13,40 @@ import { createPathLayer, createPzLayers, createScatterplotLayer } from 'utils/l
 const GpxPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [areas, setAreas] = useState([]);
-  const [areaId, setAreaId] = useState<number>(0);
+  const [areaId, setAreaId] = useState<number>();
   const [layers, setLayers] = useState<any[]>([]);
   const [gpxLayer, setGpxLayer] = useState<any>();
   const [scatterplotLayer, setScatterplotLayer] = useState<any>();
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
+  const [data, setData] = useState([]);
+  const [playing, setPlaying] = useState(false);
+  const [geoJSONData, setGeoJSONData] = useState<Array>([]);
+  const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
+
+  const handlePlayClick = (flg: boolean) => {
+    setPlaying(flg);
+  };
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (playing && geoJSONData && currentFrameIndex < geoJSONData[0].geometry.coordinates.length) {
+      timer = setInterval(() => {
+        setCurrentFrameIndex((index) => index + 1);
+      }, 500);
+    }
+    return () => clearInterval(timer);
+  }, [playing, currentFrameIndex]);
+
+  useEffect(() => {
+    if (geoJSONData.length > 0) {
+      // createScatterplotLayerに0-indexのgpxDatasを渡す
+      let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
+      geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, currentFrameIndex);
+      const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, false);
+      setLayers([scatterplot_layer]);
+    }
+  }, [currentFrameIndex]);
 
   const fetchAreas = async () => {
     try {
@@ -57,7 +85,6 @@ const GpxPage = () => {
     if (!file) return;
 
     const reader = new FileReader();
-    const old_layers = layers;
     let new_layers: any[] = [];
     reader.onload = (event) => {
       const gpxText = event.target?.result;
@@ -65,13 +92,13 @@ const GpxPage = () => {
         const parser = new DOMParser();
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
+        setGeoJSONData(geoJSONData.features);
         const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
         setGpxLayer(path_layer);
         new_layers.push(path_layer);
         const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
         setScatterplotLayer(scatterplot_layer);
         new_layers.push(scatterplot_layer);
-        new_layers = new_layers.concat(old_layers.slice(1));
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
       }
       setLayers([new_layers]);
@@ -150,6 +177,18 @@ const GpxPage = () => {
         <Grid item xs={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button onClick={displayPzLayers} variant="contained" color="primary">
             PZを描画
+          </Button>
+        </Grid>
+      </Grid>
+      <Grid container mb={2}>
+        <Grid item xs={6}>
+          <Button onClick={() => handlePlayClick(true)} variant="contained" color="primary">
+            再生
+          </Button>
+        </Grid>
+        <Grid item xs={6}>
+          <Button onClick={() => handlePlayClick(false)} variant="contained" color="primary">
+            停止
           </Button>
         </Grid>
       </Grid>
