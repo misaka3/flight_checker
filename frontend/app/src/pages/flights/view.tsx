@@ -16,6 +16,7 @@ const GpxPage = () => {
   const [areaId, setAreaId] = useState<number>(0);
   const [layers, setLayers] = useState<any[]>([]);
   const [gpxLayer, setGpxLayer] = useState<any>();
+  const [scatterplotLayer, setScatterplotLayer] = useState<any>();
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
 
@@ -37,7 +38,7 @@ const GpxPage = () => {
   };
 
   const displayPzLayers = async () => {
-    let new_layers = [gpxLayer];
+    let new_layers = [gpxLayer, scatterplotLayer];
 
     try {
       const response = await axios.get(`/areas/${areaId}`);
@@ -68,6 +69,7 @@ const GpxPage = () => {
         setGpxLayer(path_layer);
         new_layers.push(path_layer);
         const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
+        setScatterplotLayer(scatterplot_layer);
         new_layers.push(scatterplot_layer);
         new_layers = new_layers.concat(old_layers.slice(1));
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
