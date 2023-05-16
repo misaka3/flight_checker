@@ -182,7 +182,7 @@ const GpxPage = () => {
             <FormControl fullWidth required>
               <InputLabel>エリア</InputLabel>
               <Select
-                name="area_id"
+                label="エリア"
                 value={areaId}
                 onChange={handleAreaChange}
                 style={{ height: '40px' }}
