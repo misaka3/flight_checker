@@ -167,13 +167,13 @@ const GpxPage = () => {
         </Box>
         <Grid container justifyContent="flex-end" mb={4}>
           <Grid item style={{ marginRight: "16px"}}>
-            <Button onClick={() => handleButtonClick(false)}  variant="contained" color="primary" >
-              航跡図を描画
+            <Button onClick={() => handleButtonClick(true)}  variant="outlined" color="primary" >
+              高度を補正して描画
             </Button>
           </Grid>
           <Grid item>
-            <Button onClick={() => handleButtonClick(true)}  variant="contained" color="primary" >
-              高度を補正して描画
+            <Button onClick={() => handleButtonClick(false)}  variant="contained" color="primary" >
+              航跡図を描画
             </Button>
           </Grid>
         </Grid>
