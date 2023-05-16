@@ -47,13 +47,14 @@ const GpxPage = () => {
     return () => clearInterval(timer);
   }, [playing, geoJSONData]);
 
+  // Display newScatterplotLayer for gpx timelapsed animation
   useEffect(() => {
-    if (newScatterplotLayer) {
+    if (pzLayers && newScatterplotLayer) {
       let new_layers = [...pzLayers];
       new_layers.push(newScatterplotLayer);
       setLayers(new_layers);
     }
-  }, [newScatterplotLayer]);
+  }, [newScatterplotLayer, pzLayers]);
 
   const fetchAreas = async () => {
     try {
