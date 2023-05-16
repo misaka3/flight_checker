@@ -25,10 +25,12 @@ const GpxPage = () => {
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
   const [playing, setPlaying] = useState(false);
+  const [scatterplotFlg, setScatterplotFlg] = useState(true); // true: Full display layer, false: Part display layer
   const [geoJSONData, setGeoJSONData] = useState<Array<any>>([]);
 
   const gpxAnimationSwitch = (flg: boolean) => {
     setPlaying(flg);
+    setScatterplotFlg(false);
   };
 
   // gpxLayer(scatterplotLayer)'s timelapsed animation
@@ -74,7 +76,12 @@ const GpxPage = () => {
   };
 
   const displayPzLayers = async () => {
-    let new_layers = [gpxLayer, scatterplotLayer];
+    let new_layers = [];
+    if (scatterplotFlg) {
+      new_layers = [gpxLayer, scatterplotLayer];
+    } else {
+      new_layers = [newScatterplotLayer];
+    }
 
     try {
       const response = await axios.get(`/areas/${areaId}`);
@@ -96,6 +103,9 @@ const GpxPage = () => {
 
     const reader = new FileReader();
     let new_layers: any[] = [];
+    if (pzLayers.length > 0) {
+      new_layers = [...pzLayers];
+    }
     reader.onload = (event) => {
       const gpxText = event.target?.result;
       if (typeof gpxText === 'string') {
