@@ -1,0 +1,16 @@
+.gradient{
+  display: inline-block;
+  color:#fff;
+  padding: 15px 60px;
+  border-radius:30px;
+  text-decoration: none;
+  outline: none;
+  background: linear-gradient(270deg, #3bade3 0%, #576fe6 25%, #9844b7 51%, #ff357f 100%);
+  background-position: 1% 50%;
+  background-size: 200% auto;
+  transition: all 0.3s ease-out;
+}
+
+.gradient:hover {
+  background-position: 99% 50%;
+}
