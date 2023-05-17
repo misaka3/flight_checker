@@ -14,6 +14,7 @@ import DrawerList from 'components/DrawerList';
 
 type MainLayoutProps = {
   children: React.ReactNode;
+  pathname: string;
 }
 
 const drawerWidth = 240;
@@ -87,7 +88,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
   }),
 );
 
-const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children, pathname }) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -102,7 +103,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} sx={{bgcolor: '#28282a'}}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -116,24 +117,35 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+          <Typography variant="h6" noWrap component="div" sx={{ fontFamily: 'Georgia' }}>
             Flight Checker
           </Typography>
         </Toolbar>
       </AppBar>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <IconButton onClick={handleDrawerClose}>
-            <ChevronLeftIcon />
-          </IconButton>
-        </DrawerHeader>
-        <Divider />
-        <DrawerList open={open} />
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        {children}
-      </Box>
+      {pathname !== '/' ? (
+        <Drawer variant="permanent" open={open}>
+          <DrawerHeader>
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </DrawerHeader>
+          <Divider />
+          <DrawerList open={open} />
+        </Drawer>
+      ) : (
+        <></>
+      )}
+      {pathname !== '/' ? (
+        <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+          <DrawerHeader />
+          {children}
+        </Box>
+      ) : (
+        <Box component="main" sx={{ flexGrow: 1 }}>
+          <DrawerHeader />
+          {children}
+        </Box>
+      )}
     </Box>
   );
 }
