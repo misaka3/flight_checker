@@ -13,16 +13,14 @@ const RootPage = () => {
   };
 
   const handleButtonClick = () => {
-    // !fileの場合、ファイルを選択してくださいというアラートを出す
     if (!file) {
       alert("ファイルを選択してください");
       return;
     }
-  
+
     // /flights/view.tsxへ遷移し、fileを引数(file)として渡す
     router.push({
-      pathname: '/flights/view',
-      query: { file: file.name },  // 通常、ファイル自体はURLパラメータとして送信できません。なのでここではファイル名を送信しています。
+      pathname: '/flights/view'
     });
   };
 

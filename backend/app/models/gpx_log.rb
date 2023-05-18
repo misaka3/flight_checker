@@ -1,0 +1,2 @@
+class GpxLog < ApplicationRecord
+end
