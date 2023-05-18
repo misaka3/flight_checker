@@ -3,6 +3,7 @@ import { Box, Button, Grid, IconButton, TextField } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styles from '~/styles/pages/index.module.css';
+import axios from '../../lib/axiosInstance';
 
 const RootPage = () => {
   const router = useRouter();
@@ -12,16 +13,26 @@ const RootPage = () => {
     setFile(e.target.files?.[0] || null);
   };
 
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (!file) {
       alert("ファイルを選択してください");
       return;
     }
+    console.log("file");
+    console.log(file);
 
-    // /flights/view.tsxへ遷移し、fileを引数(file)として渡す
-    router.push({
-      pathname: '/flights/view'
-    });
+    try {
+      const response = await axios.post('/gpx_logs', {
+        file_name: file.name,
+        file: file,
+      });
+      console.log("response");
+      console.log(response);
+    } catch (error) {
+      console.error(error);
+    }
+
+    // 
   };
 
   return (
