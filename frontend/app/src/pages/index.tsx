@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { Box, Button, Grid, IconButton, SelectChangeEvent, TextField } from '@mui/material';
-import Mapbox from 'components/Mapbox';
+import RootMapbox from 'components/RootMapbox';
 import styles from '~/styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
@@ -131,21 +131,30 @@ const RootPage = () => {
   }, []);
 
   return (
-    <div style={{
-      backgroundImage: "url('/sky_00136.jpg')",
-      backgroundSize: "cover",
-      backgroundPosition: "center",
-      height: "100vh",
-      width: "100vw",
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
-      {layers.length > 0 && initialCoordinates ? (
-        <div style={{ flexGrow: 1, position: "absolute", height: "600px", marginBottom: "32px", width: "90%", margin: "auto" }}>
-          <Mapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
+    layers.length > 0 && initialCoordinates ? (
+      <div style={{
+        backgroundColor: "#73829E",
+        height: "100vh",
+        width: "100vw",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <div style={{ position: "relative", width: "100%", height: "600px", marginBottom: "32px" }}>
+          <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
         </div>
-      ) : (
+      </div>
+    ) : (
+      <div style={{
+        backgroundImage: "url('/sky_00136.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        height: "100vh",
+        width: "100vw",
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
         <div style={{ width: "60%", maxWidth: "550px", margin: "auto" }}>
           <Box mb={3}>
             <Grid container spacing={2} alignItems="center">
@@ -191,8 +200,8 @@ const RootPage = () => {
             </Grid>
           </Grid>
         </div>
-      )}
-    </div>
+      </div>
+    )
   )
 }
 
