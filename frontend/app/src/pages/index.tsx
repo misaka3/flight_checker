@@ -77,6 +77,10 @@ const RootPage = () => {
     setAreaId(Number(e.target.value));
   };
 
+  useEffect(() => {
+    displayPzLayers();
+  }, [areaId]);
+
   const displayPzLayers = async () => {
     let new_layers = [];
     if (scatterplotFlg) {
