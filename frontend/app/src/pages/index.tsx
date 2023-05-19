@@ -202,7 +202,8 @@ const RootPage = () => {
                 </Button>
                 <Dialog
                   open={open}
-                  data={{ altitude: "4000ft", speed: "100km/h", distance: "100km", time: "1h" }}
+                  // TODO: Change data to flight log data
+                  data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
                   string={'フライトログ'}
                   onClose={handleClose}
                 />
