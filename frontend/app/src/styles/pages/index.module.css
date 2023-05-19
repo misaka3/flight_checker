@@ -14,3 +14,46 @@
 .gradient:hover {
   background-position: 99% 50%;
 }
+
+.gpxForm {
+  width: 60%;
+  max-width: 550px;
+  margin: auto;
+}
+
+.inputGpxField {
+  height: 40px;
+  padding: 0 12px;
+  background-color: white;
+}
+
+.fileUploadButton {
+  display: none;
+}
+
+.rootImg {
+  background-image: url('/sky_00136.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mapBackground {
+  background-color: #73829E;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mapboxArea {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  margin-bottom: 32px
+}

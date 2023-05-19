@@ -132,30 +132,14 @@ const RootPage = () => {
 
   return (
     layers.length > 0 && initialCoordinates ? (
-      <div style={{
-        backgroundColor: "#73829E",
-        height: "100vh",
-        width: "100vw",
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <div style={{ position: "relative", width: "100%", height: "600px", marginBottom: "32px" }}>
+      <div className={styles.mapBackground}>
+        <div className={styles.mapboxArea}>
           <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
         </div>
       </div>
     ) : (
-      <div style={{
-        backgroundImage: "url('/sky_00136.jpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        height: "100vh",
-        width: "100vw",
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-        <div style={{ width: "60%", maxWidth: "550px", margin: "auto" }}>
+      <div className={styles.rootImg}>
+        <div className={styles.gpxForm}>
           <Box mb={3}>
             <Grid container spacing={2} alignItems="center">
               <Grid item>
@@ -164,7 +148,7 @@ const RootPage = () => {
                   type="file"
                   accept=".gpx"
                   onChange={handleFileUpload}
-                  style={{ display: 'none' }}
+                  className={styles.fileUploadButton}
                 />
                 <label htmlFor="file-upload-button">
                   <IconButton color="default" component="span" aria-label="upload file" sx={{color: 'white'}}>
@@ -179,11 +163,7 @@ const RootPage = () => {
                   value={file ? file.name : '.gpxファイルを選択してください'}
                   fullWidth
                   InputProps={{
-                    style: {
-                      height: '40px',
-                      padding: '0 12px',
-                      backgroundColor: 'white',
-                    },
+                    className: styles.inputGpxField,
                   }}
                 />
               </Grid>
