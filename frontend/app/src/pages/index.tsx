@@ -1,13 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { Box, Button, Grid, IconButton, SelectChangeEvent, TextField } from '@mui/material';
+import { Box, Button, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import RootMapbox from 'components/RootMapbox';
 import styles from '~/styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
 import { createPathLayer, createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import StopIcon from '@mui/icons-material/Stop';
+import Dialog from 'components/Dialog';
+import SportsScoreIcon from '@mui/icons-material/SportsScore';
 
 const RootPage = () => {
   const router = useRouter();
@@ -24,6 +28,7 @@ const RootPage = () => {
   const [playing, setPlaying] = useState(false);
   const [scatterplotFlg, setScatterplotFlg] = useState(true); // true: Full display layer, false: Part display layer
   const [geoJSONData, setGeoJSONData] = useState<Array<any>>([]);
+  const [open, setOpen] = useState(false);
 
   const gpxAnimationSwitch = (flg: boolean) => {
     setPlaying(flg);
@@ -126,6 +131,19 @@ const RootPage = () => {
     reader.readAsText(file);
   };
 
+  const handleFlightLogClick = () => {
+    console.log('Flight log button clicked');
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (value: string) => {
+    setOpen(false);
+    // setSelectedValue(value);
+  };
+
   useEffect(() => {
     fetchAreas();
   }, []);
@@ -136,6 +154,62 @@ const RootPage = () => {
         <div className={styles.mapboxArea}>
           <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
         </div>
+        <Box className={styles.container}>
+          <Grid container spacing={2}>
+            <Grid item xs={3}>
+              <Button
+                variant="outlined"
+                className={styles.backRootButton}
+                onClick={() => router.push('/')}
+              >
+                選択画面に戻る
+              </Button>
+            </Grid>
+            <Grid item xs={2}>
+              <FormControl fullWidth required>
+                <InputLabel>PZ表示</InputLabel>
+                <Select
+                  label="PZ表示"
+                  value={areaId}
+                  onChange={handleAreaChange}
+                  style={{ height: '50px', backgroundColor: 'white' }}
+                >
+                  {areas.map((area: any) => (
+                    <MenuItem key={area.id} value={area.id}>
+                      {area.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={2}>
+              <div style={{ textAlign: "center" }}>
+                { playing ? (
+                  <Button onClick={() => gpxAnimationSwitch(false)} variant="contained" color="error" startIcon={<StopIcon />} className={styles.gpxAnimateButton}>
+                    停止
+                  </Button>
+                ) : (
+                  <Button onClick={() => gpxAnimationSwitch(true)} variant="contained" color="primary" startIcon={<PlayArrowIcon />} className={styles.gpxAnimateButton}>
+                  再生
+                </Button>
+                )}
+              </div>
+            </Grid>
+            <Grid item xs={5}>
+              <div style={{ textAlign: "right", marginRight: "16px" }}>
+                <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px"}}>
+                  フライトログ
+                </Button>
+                <Dialog
+                  open={open}
+                  data={{ altitude: "4000ft", speed: "100km/h", distance: "100km", time: "1h" }}
+                  string={'フライトログ'}
+                  onClose={handleClose}
+                />
+                </div>
+            </Grid>
+          </Grid>
+        </Box>
       </div>
     ) : (
       <div className={styles.rootImg}>
