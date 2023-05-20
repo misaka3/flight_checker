@@ -53,8 +53,9 @@
 .mapboxArea {
   position: relative !important;
   width: 100% !important;
-  height: 600px !important;
+  height: 580px !important;
   margin-bottom: 16px !important;
+  margin-top: 64px !important;
 }
 
 .container {
