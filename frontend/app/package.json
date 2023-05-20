@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "sh ./update-tinySdf.sh && next dev",
     "build": "sh ./update-tinySdf.sh && next build",
     "start": "next start",
     "lint": "next lint"

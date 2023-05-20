@@ -1,0 +1,89 @@
+.gradient{
+  display: inline-block;
+  color:#fff;
+  padding: 15px 60px;
+  border-radius:30px;
+  text-decoration: none;
+  outline: none;
+  background: linear-gradient(270deg, #3bade3 0%, #576fe6 25%, #9844b7 51%, #ff357f 100%);
+  background-position: 1% 50%;
+  background-size: 200% auto;
+  transition: all 0.3s ease-out;
+}
+
+.gradient:hover {
+  background-position: 99% 50%;
+}
+
+.gpxForm {
+  width: 60%;
+  max-width: 550px;
+  margin: auto;
+}
+
+.inputGpxField {
+  height: 40px;
+  padding: 0 12px;
+  background-color: white;
+}
+
+.fileUploadButton {
+  display: none;
+}
+
+.rootImg {
+  background-image: url('/sky_00136.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.mapBackground {
+  background-color: #73829E;
+  height: 100vh;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+}
+
+.mapboxArea {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  margin-bottom: 16px
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.button {
+  flex: 1 0 auto;
+  margin: 0.5em;
+}
+
+.selectContainer {
+  flex: 2 0 auto;
+  margin: 0.5em;
+}
+
+.gpxAnimateButton {
+  height: 50px;
+  width: 120px;
+  border-radius: 30px;
+}
+
+.backRootButton {
+  color: white;
+  background-color: #b8b8b8;
+  border: none;
+  border-radius: 30px;
+  margin-left: 20px;
+  height: 50px;
+}
