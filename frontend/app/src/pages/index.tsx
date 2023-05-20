@@ -223,8 +223,15 @@ const RootPage = () => {
               )}
             </Grid>
             <Grid item xs={3}>
-              <div style={{ textAlign: "right", marginRight: "16px" }}>
-                <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px"}}>
+              <div style={{ textAlign: "right" }}>
+                <Button
+                  variant="outlined"
+                  style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}
+                  onClick={() => handleButtonClick(true)}
+                >
+                  高度補正
+                </Button>
+                <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}>
                   フライトログ
                 </Button>
                 <Dialog
