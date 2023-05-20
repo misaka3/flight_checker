@@ -12,6 +12,7 @@ import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import Dialog from 'components/Dialog';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
+import CachedIcon from '@mui/icons-material/Cached';
 
 const RootPage = () => {
   const router = useRouter();
@@ -23,6 +24,7 @@ const RootPage = () => {
   const [pzLayers, setPzLayers] = useState<any[]>([]);
   const [scatterplotLayer, setScatterplotLayer] = useState<any>();
   const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
+  const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -35,15 +37,27 @@ const RootPage = () => {
     setScatterplotFlg(false);
   };
 
+  const displayGpxFullPath = () => {
+    setPlaying(false);
+    setScatterplotFlg(true);
+    setCurrentFrameIndex(0);
+
+    let new_layers = [...pzLayers];
+    // new_layers.push(gpxLayer);
+    new_layers.push(scatterplotLayer);
+    setLayers([new_layers]);
+  };
+
   // gpxLayer(scatterplotLayer)'s timelapsed animation
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    let currentFrameIndex = 0;
-    if (playing && geoJSONData && currentFrameIndex < geoJSONData[0].geometry.coordinates.length) {
+    let frameIndex = currentFrameIndex;
+    if (playing && geoJSONData && frameIndex < geoJSONData[0].geometry.coordinates.length) {
       timer = setInterval(() => {
-        currentFrameIndex += 1;
+        frameIndex += 1;
+        setCurrentFrameIndex(frameIndex);
         let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
-        geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, currentFrameIndex);
+        geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, frameIndex);
         const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, false);
         setNewScatterplotLayer(scatterplot_layer);
       }, 100);
@@ -164,7 +178,7 @@ const RootPage = () => {
               <Button
                 variant="outlined"
                 className={styles.backRootButton}
-                onClick={() => router.push('/')}
+                onClick={() => router.reload()}
               >
                 選択画面に戻る
               </Button>
@@ -199,7 +213,16 @@ const RootPage = () => {
                 )}
               </div>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={2}>
+              { !scatterplotFlg ? (
+                <Button onClick={displayGpxFullPath} variant="outlined" color="error" startIcon={<CachedIcon />} className={styles.gpxClearButton}>
+                  クリア
+                </Button>
+              ) : (
+                <></>
+              )}
+            </Grid>
+            <Grid item xs={3}>
               <div style={{ textAlign: "right", marginRight: "16px" }}>
                 <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px"}}>
                   フライトログ
