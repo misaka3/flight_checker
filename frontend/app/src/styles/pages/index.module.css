@@ -79,6 +79,17 @@
   border-radius: 30px;
 }
 
+.gpxClearButton {
+  height: 50px;
+  width: 120px;
+  background-color: #fff;
+  border-radius: 30px;
+}
+
+.gpxClearButton:hover {
+  background-color: #ffe7e7;
+}
+
 .backRootButton {
   color: white;
   background-color: #b8b8b8;
