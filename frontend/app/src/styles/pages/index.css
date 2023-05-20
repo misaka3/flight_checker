@@ -1,0 +1,4 @@
+/* mapboxの下にmapbox１つ分の余白が常に表示されるのを防止 */
+div[mapboxgl-children] {
+  display: none !important;
+}

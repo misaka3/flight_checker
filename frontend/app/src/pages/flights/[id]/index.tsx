@@ -10,7 +10,7 @@ import jaLocale from 'date-fns/locale/ja';
 import TaskForm from 'components/TaskForm'
 import Mapbox from "components/Mapbox";
 import { mgrsToLatLon } from 'utils/coordinateUtils';
-import { createColumnLayer, createIconLayer, createPolygonLayer } from 'utils/layerUtils';
+import { createIconLayer, createPzLayers, createTaskLayers } from 'utils/layerUtils';
 import { IconLayer } from '@deck.gl/layers/typed';
 
 interface FlightObject {
@@ -63,12 +63,6 @@ interface PolygonLayerObject {
   color: [number, number, number, number];
 }
 
-interface PzLayerObject {
-  coordinates: [number, number];
-  radius: number;
-  altitude: number;
-}
-
 interface EventObject {
   id: number;
   area_id: number;
@@ -101,7 +95,7 @@ const FlightPage = () => {
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [flight, setFlight] = useState<FlightObject>();
 
-  const getLatLon = (utm_zone: string, clp_coordinates: string): (number[] | undefined) => {
+  const getLonLat = (utm_zone: string, clp_coordinates: string): ([number, number] | undefined) => {
     const regex = /(\d{4}).+(\d{4})/;
     const result = clp_coordinates.match(regex);
     if (result !== null) {
@@ -132,32 +126,35 @@ const FlightPage = () => {
   // create layers for mapbox
   useEffect(() => {
     if (flight !== undefined) {
-      let new_layers = []
-      const coordinates = getLatLon(flight.area.utm_zone, flight.clp);
+      let layers: any[] = []
+      const coordinates = getLonLat(flight.area.utm_zone, flight.clp);
       if (coordinates !== undefined && coordinates.length === 2) {
-        // createIconLayer
-        const coordinatesTuple: [number, number] = [coordinates[1], coordinates[0]];
-        setInitialCoordinates(coordinatesTuple);
-        const iconLayer = createIconLayer({ coordinates: coordinatesTuple });
-        new_layers.push(iconLayer);
-        // createColumnLayer
+        // CLP Icon
+        setInitialCoordinates(coordinates);
+        const iconLayer = createIconLayer({ coordinates: coordinates });
+        layers.push(iconLayer);
+        // Task Icon
+        const task_layers = createTaskLayers(flight.area.utm_zone, flight.tasks);
+        if (task_layers.length > 0) {
+          task_layers.map(task_layer => layers.push(task_layer));
+        }
+        // Pzs Icon
         const pzs = flight.area.prohibited_zones;
         if (pzs.length > 0) {
-          pzs.forEach((pz: PzObject) => {
-            let layer;
-            if (pz.pz_type === 0) {
-              layer = createColumnLayer(pz.data as ColumnLayerObject);
-            } else if (pz.pz_type === 1) {
-              layer = createPolygonLayer(pz.data);
-            }
-            new_layers.push(layer);
-          })
+          const pz_layers = createPzLayers(pzs);
+          pz_layers.map(pz_layer => layers.push(pz_layer));
         }
+        // INFO: レイヤーid重複を避けるための処理
+        const new_layers = layers.map((layer, index) => {
+          layer.id = `${layer.id}${index}`;
+          return layer;
+        });
+
         setLayers(new_layers);
       }
     }
   }, [flight]);
-  
+
   if (!flight) return <div>Loading...</div>;
 
   return (
@@ -264,7 +261,7 @@ const FlightPage = () => {
           <TaskForm key={task.id} task_id={task.id.toString()} />
         ))
       )}
-      <div style={{ flexGrow: 1, position: "relative", height: "400px", marginBottom: "32px" }}>
+      <div style={{ flexGrow: 1, position: "relative", height: "600px", marginBottom: "32px" }}>
         {layers.length > 0 && initialCoordinates && (
           <Mapbox layers={layers} initialCoordinates={initialCoordinates} />
         )}

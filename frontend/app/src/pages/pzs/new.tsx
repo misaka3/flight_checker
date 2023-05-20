@@ -27,8 +27,9 @@ interface PolygonPzData {
 
 const pzTypes: PzType[] = [
   { name: '円柱型PZ(レッドPZ)', value: 0, color: [255, 0, 0, 255 * 0.3] },
+  { name: '円柱型PZ(イエローPZ)', value: 4, color: [255, 241, 0, 255 * 0.5] },
   { name: '多角形PZ(レッドPZ)', value: 1, color: [255, 0, 0, 255 * 0.3] },
-  { name: '多角形PZ(イエローPZ)', value: 2, color: [255, 255, 0, 255 * 0.3]  },
+  { name: '多角形PZ(イエローPZ)', value: 2, color: [255, 241, 0, 255 * 0.5]  },
   { name: '多角形PZ(ブルーPZ)', value: 3, color: [0, 0, 255, 255 * 0.3]  },
 ];
 
@@ -81,24 +82,27 @@ const App: React.FC = () => {
 
   const submitData = async () => {
     let data;
-    if (pz.pz_type === 0) {
+    // columnLayer
+    if (pz.pz_type === 0 || pz.pz_type === 4) {
       let currentLatitude = latitude;
       let currentLongitude = longitude;
 
       if (utmEnabled) {
-        const latlon = mgrsToLatLon(utmCoordinates);
-        currentLatitude = latlon[0].toString();
-        currentLongitude = latlon[1].toString();
+        const coordinates = mgrsToLatLon(utmCoordinates);
+        currentLongitude = coordinates[0].toString();
+        currentLatitude = coordinates[1].toString();
       }
+      const color = pzTypes.find(pzType => pzType.value === pz.pz_type)?.color;
 
       data = {
         coordinates: [parseFloat(currentLongitude), parseFloat(currentLatitude)],
         radius: parseFloat(radius),
         altitude: parseFloat(altitude),
         grid_type: utmEnabled,
-        utm_coordinates: utmCoordinates
+        utm_coordinates: utmCoordinates,
+        color: color
       }
-    } else if (pz.pz_type === 1) {
+    } else if (pz.pz_type === 1 || pz.pz_type === 2 || pz.pz_type === 3) {
       const contour = coordinates.map(coord => [parseFloat(coord.x), parseFloat(coord.y)]);
       const color = pzTypes.find(pzType => pzType.value === pz.pz_type)?.color;
       data = { contour: contour, altitude: polygonPz.altitude, color: color };
@@ -147,7 +151,7 @@ const App: React.FC = () => {
         </Select>
       </FormControl>
 
-      {pz.pz_type !== undefined && pz.pz_type === 0 && (
+      {pz.pz_type !== undefined && (pz.pz_type === 0 || pz.pz_type === 4) && (
         <>
           <Box component="div" sx={{ mb: 4 }}>
             <FormControlLabel
@@ -219,7 +223,7 @@ const App: React.FC = () => {
         </>
       )}
 
-      {pz.pz_type !== undefined && pz.pz_type > 0 && (
+      {pz.pz_type !== undefined &&  (pz.pz_type === 1 || pz.pz_type === 2 || pz.pz_type === 3) && (
         <>
           {coordinates.map(coord => (
             <Box component="div" sx={{ mb: 2 }} key={coord.id}>
