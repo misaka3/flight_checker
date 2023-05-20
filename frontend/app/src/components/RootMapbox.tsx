@@ -53,7 +53,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
   return (
     <div>
       { layers.length > 0 && (
-        <div style={{ width: "100%", height: "600px", position: "absolute", top: 0, left: 0, right: 0 }}>
+        <div style={{ width: "100%", height: "580px", position: "absolute", top: 0, left: 0, right: 0 }}>
           <DeckGL
             layers={layers}
             initialViewState={initViewState}
