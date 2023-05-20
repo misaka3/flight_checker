@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import { Box, Button, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
 import RootMapbox from 'components/RootMapbox';
-import styles from '~/styles/pages/index.module.css';
+import styles from 'styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
 import { createPathLayer, createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
