@@ -11,7 +11,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <AppBar position="fixed" sx={{bgcolor: '#28282a'}}>
         <Toolbar>
           <Typography variant="h6" noWrap component="div" sx={{ fontFamily: 'Georgia' }}>
-            Flight Checker
+            Flight Reviewer
           </Typography>
         </Toolbar>
       </AppBar>

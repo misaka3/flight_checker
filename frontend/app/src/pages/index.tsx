@@ -117,12 +117,24 @@ const RootPage = () => {
       console.error(error);
     }
   };
+  
+  const createGpxLog = async (filename: string) => {
+    try {
+      await axios.post('/gpx_logs', {
+        file_name: filename
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleButtonClick = (altitudeFlg: boolean) => {
     if (!file) {
       alert("ファイルを選択してください");
       return;
     }
+
+    createGpxLog(file.name);
 
     const reader = new FileReader();
     let new_layers: any[] = [];
@@ -138,10 +150,10 @@ const RootPage = () => {
         setGeoJSONData(geoJSONData.features);
         const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
         setGpxLayer(path_layer);
-        new_layers.push(path_layer);
+        new_layers.unshift(path_layer);
         const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
         setScatterplotLayer(scatterplot_layer);
-        new_layers.push(scatterplot_layer);
+        new_layers.unshift(scatterplot_layer);
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
       }
       setLayers([new_layers]);
