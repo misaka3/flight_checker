@@ -84,6 +84,16 @@ const RootPage = () => {
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files !== null && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      const fileName = file.name;
+      const fileExtension = fileName.split('.').pop();
+  
+      if (fileExtension !== 'gpx') {
+        alert(".gpxファイルを選択してください");
+        return;
+      }
+    }
     setFile(e.target.files?.[0] || null);
   };
   
