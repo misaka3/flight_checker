@@ -112,7 +112,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ fontFamily: 'Georgia' }}>
-            Flight Checker
+            Flight Reviewer
           </Typography>
         </Toolbar>
       </AppBar>

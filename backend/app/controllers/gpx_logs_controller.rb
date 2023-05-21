@@ -46,6 +46,6 @@ class GpxLogsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def gpx_log_params
-      params.require(:gpx_log).permit(:file_name, :file_url, :file)
+      params.require(:gpx_log).permit(:file_name, :file_url)
     end
 end
