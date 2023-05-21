@@ -223,7 +223,8 @@ const RootPage = () => {
               )}
             </Grid>
             <Grid item xs={3}>
-              <div style={{ textAlign: "right" }}>
+              <></>
+              {/* <div style={{ textAlign: "right" }}>
                 <Button
                   variant="outlined"
                   style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}
@@ -241,7 +242,7 @@ const RootPage = () => {
                   string={'フライトログ'}
                   onClose={handleClose}
                 />
-                </div>
+                </div> */}
             </Grid>
           </Grid>
         </Box>
