@@ -1,5 +1,4 @@
-import { PathLayer, ColumnLayer, IconLayer, ScatterplotLayer, SolidPolygonLayer } from '@deck.gl/layers/typed';
-import { PathStyleExtension } from '@deck.gl/extensions/typed';
+import { ColumnLayer, IconLayer, ScatterplotLayer, SolidPolygonLayer } from '@deck.gl/layers/typed';
 import { getUtmCoordinates, mgrsToLatLon } from 'utils/coordinateUtils';
 
 interface ColumnLayerObject {
@@ -103,29 +102,6 @@ function handleHover(info: any, setHoverInfo: any, firstAltitude: number) {
     setHoverInfo(null);
   }
 }
-
-// gpx track
-// export function createPathLayer(gpxDatas: any[], altitudeFlg = false) {
-//   const firstAltitude = altitudeFlg ? gpxDatas[0].geometry.coordinates[0][2] : 0;
-//   const pathLayer = new PathLayer({
-//     id: 'path-layer',
-//     data: gpxDatas,
-//     getPath: (d: any) => 
-//       d.geometry.coordinates.map((coordinate: any) => {
-//         // 高度のずれを修正する
-//         return [coordinate[0], coordinate[1], coordinate[2] - firstAltitude];
-//       }),
-//     getColor: (d: any) =>
-//       d.geometry.coordinates.map((coordinate: any) =>
-//         altitudeToColor(coordinate[2] * 3.28084), // meters to feet
-//       ),
-//     getWidth: 10,
-//     extensions: [new PathStyleExtension({ dash: true })],
-//     getDashArray: (d: any) => [0, 0]
-//   });
-
-//   return pathLayer;
-// }
 
 interface iconLayerObject {
   coordinates: [number, number];
