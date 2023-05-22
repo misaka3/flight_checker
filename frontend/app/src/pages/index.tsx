@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { Box, Button, FormControl, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, TextField } from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, TextField } from '@mui/material';
 import RootMapbox from 'components/RootMapbox';
 import styles from 'styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
@@ -31,6 +31,13 @@ const RootPage = () => {
   const [scatterplotFlg, setScatterplotFlg] = useState(true); // true: Full display layer, false: Part display layer
   const [geoJSONData, setGeoJSONData] = useState<Array<any>>([]);
   const [open, setOpen] = useState(false);
+  const [altFlg, setAltFlg] = useState(false);
+
+  const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const flg = event.target.checked;
+    setAltFlg(flg);
+    handleButtonClick(flg)
+  };
 
   const gpxAnimationSwitch = (flg: boolean) => {
     setPlaying(flg);
@@ -139,8 +146,9 @@ const RootPage = () => {
   };
 
   const handleButtonClick = (altitudeFlg: boolean) => {
+    console.log(file);
     if (!file) {
-      alert("ファイルを選択してください");
+      alert(".gpxファイルを選択してください");
       return;
     }
 
@@ -245,16 +253,22 @@ const RootPage = () => {
               )}
             </Grid>
             <Grid item xs={3}>
-              <></>
-              {/* <div style={{ textAlign: "right" }}>
-                <Button
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <FormGroup>
+                  <FormControlLabel
+                    control={<Switch checked={altFlg} onChange={handleAltFlgChange} color="default" />}
+                    label="高度補正"
+                    style={{ color: "white", height: "50px", marginRight: "24px" }}
+                  />
+                </FormGroup>
+                {/* <Button
                   variant="outlined"
-                  style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}
+                  style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "24px", borderRadius: "30px"}}
                   onClick={() => handleButtonClick(true)}
                 >
-                  高度補正
-                </Button>
-                <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}>
+                  高度を補正する
+                </Button> */}
+                {/* <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}>
                   フライトログ
                 </Button>
                 <Dialog
@@ -263,8 +277,8 @@ const RootPage = () => {
                   data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
                   string={'フライトログ'}
                   onClose={handleClose}
-                />
-                </div> */}
+                /> */}
+              </div>
             </Grid>
           </Grid>
         </Box>
