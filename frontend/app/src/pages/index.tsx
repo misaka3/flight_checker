@@ -60,12 +60,12 @@ const RootPage = () => {
     let timer: NodeJS.Timeout;
     let frameIndex = currentFrameIndex;
     if (playing && geoJSONData && frameIndex < geoJSONData[0].geometry.coordinates.length) {
+      let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
       timer = setInterval(() => {
         frameIndex += 1;
         setCurrentFrameIndex(frameIndex);
-        let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
         geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, frameIndex);
-        const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, false);
+        const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, altFlg);
         setNewScatterplotLayer(scatterplot_layer);
       }, 100);
     }
@@ -166,9 +166,9 @@ const RootPage = () => {
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
         setGeoJSONData(geoJSONData.features);
-        const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
-        setGpxLayer(path_layer);
-        new_layers.unshift(path_layer);
+        // const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
+        // setGpxLayer(path_layer);
+        // new_layers.unshift(path_layer);
         const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
         setScatterplotLayer(scatterplot_layer);
         new_layers.unshift(scatterplot_layer);
