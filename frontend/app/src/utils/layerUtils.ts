@@ -1,5 +1,4 @@
-import { PathLayer, ColumnLayer, IconLayer, ScatterplotLayer, SolidPolygonLayer } from '@deck.gl/layers/typed';
-import { PathStyleExtension } from '@deck.gl/extensions/typed';
+import { ColumnLayer, IconLayer, ScatterplotLayer, SolidPolygonLayer } from '@deck.gl/layers/typed';
 import { getUtmCoordinates, mgrsToLatLon } from 'utils/coordinateUtils';
 
 interface ColumnLayerObject {
@@ -45,12 +44,12 @@ export function createColumnLayer(data: ColumnLayerObject) {
   });
 }
 
-export function altitudeToColor(altitude: number): [number, number, number] {
+export function altitudeToColor(altitude: number, minAltitude: number, maxAltitude: number): [number, number, number] {
   // min, max altitude feet
-  const minAltitude = 0;
-  const maxAltitude = 4000;
+  const minAltitudeFt = minAltitude * 3.28084;
+  const maxAltitudeFt = maxAltitude * 3.28084;
 
-  const t = (altitude - minAltitude) / (maxAltitude - minAltitude);
+  const t = (altitude - minAltitudeFt) / (maxAltitudeFt - minAltitudeFt);
   const r = t * 255;
   const g = 0;
   const b = (1 - t) * 255;
@@ -70,7 +69,7 @@ function flattenGpxData(gpxDatas: any[], firstAltitude: number) {
   );
 }
 
-export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, altitudeFlg = false ) {
+export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, altitudeFlg = false, minAltitude = 0, maxAltitude = 0 ) {
   const firstAltitude = altitudeFlg ? gpxDatas[0].geometry.coordinates[0][2] : 0;
   const flattenedGpxDatas = flattenGpxData(gpxDatas, firstAltitude);
   const scatterplotLayer = new ScatterplotLayer({
@@ -85,7 +84,7 @@ export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, alti
     lineWidthMinPixels: 1,
     getPosition: (d: any) => d.geometry.coordinates,
     getRadius: 2,
-    getColor: (d: any) => altitudeToColor(d.geometry.coordinates[2] * 3.28084),
+    getColor: (d: any) => altitudeToColor(d.geometry.coordinates[2] * 3.28084, minAltitude, maxAltitude),
     onHover: (info: any) => handleHover(info, setHoverInfo, firstAltitude)
   });
 
@@ -102,29 +101,6 @@ function handleHover(info: any, setHoverInfo: any, firstAltitude: number) {
   } else {
     setHoverInfo(null);
   }
-}
-
-// gpx track
-export function createPathLayer(gpxDatas: any[], altitudeFlg = false) {
-  const firstAltitude = altitudeFlg ? gpxDatas[0].geometry.coordinates[0][2] : 0;
-  const pathLayer = new PathLayer({
-    id: 'path-layer',
-    data: gpxDatas,
-    getPath: (d: any) => 
-      d.geometry.coordinates.map((coordinate: any) => {
-        // 高度のずれを修正する
-        return [coordinate[0], coordinate[1], coordinate[2] - firstAltitude];
-      }),
-    getColor: (d: any) =>
-      d.geometry.coordinates.map((coordinate: any) =>
-        altitudeToColor(coordinate[2] * 3.28084), // meters to feet
-      ),
-    getWidth: 10,
-    extensions: [new PathStyleExtension({ dash: true })],
-    getDashArray: (d: any) => [0, 0]
-  });
-
-  return pathLayer;
 }
 
 interface iconLayerObject {

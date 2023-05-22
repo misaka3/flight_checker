@@ -6,7 +6,7 @@ import { gpx } from '@tmcw/togeojson';
 import axios from "../../../lib/axiosInstance";
 import { Box, Button, TextField, Grid, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
-import { createPathLayer, createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
+import { createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 
@@ -113,9 +113,6 @@ const GpxPage = () => {
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
         setGeoJSONData(geoJSONData.features);
-        const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
-        setGpxLayer(path_layer);
-        new_layers.push(path_layer);
         const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
         setScatterplotLayer(scatterplot_layer);
         new_layers.push(scatterplot_layer);
