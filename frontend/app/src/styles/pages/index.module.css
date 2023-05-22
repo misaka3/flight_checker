@@ -32,7 +32,8 @@
 }
 
 .rootImg {
-  background-image: url('/sky_00136.jpg') !important;
+  position: relative;
+  background-image: url('/balloon.jpg') !important;
   background-size: cover !important;
   background-position: center !important;
   height: 100vh !important;
@@ -41,6 +42,17 @@
   justify-content: center !important;
   align-items: center !important;
 }
+
+.rootImg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+}
+
 
 .mapBackground {
   background-color: #73829E !important;
