@@ -86,16 +86,18 @@ export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, alti
     getPosition: (d: any) => d.geometry.coordinates,
     getRadius: 2,
     getColor: (d: any) => altitudeToColor(d.geometry.coordinates[2] * 3.28084),
-    onHover: (info: any) => handleHover(info, setHoverInfo)
+    onHover: (info: any) => handleHover(info, setHoverInfo, firstAltitude)
   });
 
   return scatterplotLayer;
 }
 
-function handleHover(info: any, setHoverInfo: any) {
+function handleHover(info: any, setHoverInfo: any, firstAltitude: number) {
   const {object, x, y} = info;
   if (object) {
-    const coordinate = object.geometry.coordinates;
+    const coordinates = object.geometry.coordinates;
+    const coordinate = [coordinates[0], coordinates[1], coordinates[2] + firstAltitude];
+
     setHoverInfo({coordinate, x, y});
   } else {
     setHoverInfo(null);

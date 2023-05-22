@@ -59,7 +59,18 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
             initialViewState={initViewState}
             controller={true}
             onViewStateChange={handleViewportChange as any}
-            getTooltip={({object}) => object && `緯度: ${hoverInfo?.coordinate[1]}, 経度: ${hoverInfo?.coordinate[0]}, 高度: ${(hoverInfo?.coordinate[2] * 3.28084).toFixed(2)}ft`}
+            getTooltip={({object}) => object && {
+              html: `
+                緯度: ${hoverInfo?.coordinate[1]}<br />
+                経度: ${hoverInfo?.coordinate[0]}<br />
+                高度: ${(hoverInfo?.coordinate[2]).toFixed(2)}m / ${(hoverInfo?.coordinate[2] * 3.28084).toFixed(2)}ft
+              `,
+              style: {
+                color: 'white',
+                backgroundColor: '#28282a',
+                fontSize: '0.8em'
+              }
+            }}
           >
             <ReactMap
               {...viewState}
