@@ -74,6 +74,7 @@ const RootPage = () => {
       }, 100);
     }
     return () => clearInterval(timer);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, geoJSONData]);
 
   // Display newScatterplotLayer for gpx timelapsed animation
@@ -114,6 +115,7 @@ const RootPage = () => {
 
   useEffect(() => {
     displayPzLayers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [areaId]);
 
   const displayPzLayers = async () => {
