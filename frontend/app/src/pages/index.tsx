@@ -6,7 +6,7 @@ import RootMapbox from 'components/RootMapbox';
 import styles from 'styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
-import { createPathLayer, createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
+import { createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
@@ -32,11 +32,14 @@ const RootPage = () => {
   const [geoJSONData, setGeoJSONData] = useState<Array<any>>([]);
   const [open, setOpen] = useState(false);
   const [altFlg, setAltFlg] = useState(false);
+  const [firstAltitude, setFirstAltitude] = useState(); // geoJSONData.features[0].geometry.coordinates[0][2]
+  const [minAltitude, setMinAltitude] = useState(0);
+  const [maxAltitude, setMaxAltitude] = useState(0);
 
   const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const flg = event.target.checked;
     setAltFlg(flg);
-    handleButtonClick(flg)
+    handleAltChangeClick(flg);
   };
 
   const gpxAnimationSwitch = (flg: boolean) => {
@@ -59,13 +62,14 @@ const RootPage = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     let frameIndex = currentFrameIndex;
-    if (playing && geoJSONData && frameIndex < geoJSONData[0].geometry.coordinates.length) {
+    if (playing && geoJSONData && firstAltitude && frameIndex < geoJSONData[0].geometry.coordinates.length) {
       let geoJSONData_copy = JSON.parse(JSON.stringify(geoJSONData));
+      const firstAlt = altFlg ? firstAltitude : 0;
       timer = setInterval(() => {
         frameIndex += 1;
         setCurrentFrameIndex(frameIndex);
         geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, frameIndex);
-        const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, altFlg);
+        const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, altFlg, minAltitude - firstAlt, maxAltitude - firstAlt);
         setNewScatterplotLayer(scatterplot_layer);
       }, 100);
     }
@@ -144,9 +148,26 @@ const RootPage = () => {
       console.error(error);
     }
   };
+  
+  const getMinMaxAltitude = (geometry: any) => {
+    console.log("getMinMaxAltitude");
+    const coordinates = geometry.coordinates;
+    const firstAltitude = coordinates[0][2];
+    let minAltitude = firstAltitude;
+    let maxAltitude = firstAltitude;
+    coordinates.map((coordinate: any) => {
+      if (coordinate[2] < minAltitude) {
+        minAltitude = coordinate[2];
+      }
+      if (maxAltitude < coordinate[2]) {
+        maxAltitude = coordinate[2];
+      }
+    });
+
+    return [firstAltitude, minAltitude, maxAltitude];
+  };
 
   const handleButtonClick = (altitudeFlg: boolean) => {
-    console.log(file);
     if (!file) {
       alert(".gpxファイルを選択してください");
       return;
@@ -166,10 +187,11 @@ const RootPage = () => {
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
         setGeoJSONData(geoJSONData.features);
-        // const path_layer = createPathLayer(geoJSONData.features, altitudeFlg);
-        // setGpxLayer(path_layer);
-        // new_layers.unshift(path_layer);
-        const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg);
+        const [firstAltitude, minAltitude, maxAltitude] = getMinMaxAltitude(geoJSONData.features[0].geometry);
+        setFirstAltitude(firstAltitude);
+        setMinAltitude(minAltitude);
+        setMaxAltitude(maxAltitude);
+        const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg, minAltitude, maxAltitude);
         setScatterplotLayer(scatterplot_layer);
         new_layers.unshift(scatterplot_layer);
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
@@ -177,6 +199,20 @@ const RootPage = () => {
       setLayers([new_layers]);
     };
     reader.readAsText(file);
+  };
+
+  const handleAltChangeClick = (flg: boolean) => {
+    let new_layers: any[] = [];
+    if (pzLayers.length > 0) {
+      new_layers = [...pzLayers];
+    }
+    if (firstAltitude) {
+      const firstAlt = flg ? firstAltitude : 0;
+      const scatterplot_layer = createScatterplotLayer(geoJSONData, setHoverInfo, flg, minAltitude - firstAlt, maxAltitude - firstAlt);
+      setScatterplotLayer(scatterplot_layer);
+      new_layers.unshift(scatterplot_layer);
+    }
+    setLayers([new_layers]);
   };
 
   const handleFlightLogClick = () => {
