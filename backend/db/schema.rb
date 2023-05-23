@@ -115,7 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_23_081835) do
 
   create_table "waypoints", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "file_name", null: false
-    t.string "data", null: false
+    t.text "data", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

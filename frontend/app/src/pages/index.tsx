@@ -13,6 +13,7 @@ import StopIcon from '@mui/icons-material/Stop';
 import Dialog from 'components/Dialog';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import CachedIcon from '@mui/icons-material/Cached';
+import { Waypoint } from '../../types/interface';
 
 const RootPage = () => {
   const router = useRouter();
@@ -45,6 +46,11 @@ const RootPage = () => {
   const gpxAnimationSwitch = (flg: boolean) => {
     setPlaying(flg);
     setScatterplotFlg(false);
+  };
+
+  const handleWaypoints = (waypoints: Waypoint[]) => {
+    console.log("handleWaypoints");
+    console.log(waypoints);
   };
 
   const displayGpxFullPath = () => {
@@ -290,7 +296,19 @@ const RootPage = () => {
                 <></>
               )}
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={1}>
+              <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}>
+                wpt追加
+              </Button>
+              <Dialog
+                open={open}
+                // data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
+                string={'オブジェクト管理'}
+                onClose={handleClose}
+                onWaypointsLoaded={handleWaypoints}
+              />
+            </Grid>
+            <Grid item xs={2}>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <FormGroup>
                   <FormControlLabel
