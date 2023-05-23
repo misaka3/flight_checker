@@ -61,13 +61,18 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
     }
   };
 
+  // 引数の文字列strの前後の空白を削除して返す
+  const removeSpace = (str: string) => {
+    return str.replace(/^\s+|\s+$/g, '');
+  };
+
   const AddWpt = ({ onWaypointsLoaded }: AddWptProps) => {
     if (!file) {
       alert(".wptファイルを選択してください");
       return;
     }
 
-    const waypoints: Waypoint[] = [];
+    let waypoints: Waypoint[] = [];
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -82,43 +87,38 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
         console.log(data);
         return;
       }
-      console.log("data");
-      console.log(data);
 
       // wptテーブルに保存する
       createWaypoint(file.name, data);
 
       const lines = data.split('\n');
-      // lines[0]に'OziExplorer'が入っていなければalertを出してreturn
       if (lines[0].indexOf('OziExplorer') === -1) {
         alert('OziExplorerのwptファイルのみインポート可能です');
         return;
       }
 
-      if (onWaypointsLoaded === undefined) return;
-
-      for (let i = 4; i < lines.length; i++) { // 最初の4行はヘッダ情報なので無視
+      // 最初の4行はヘッダ情報なので無視
+      for (let i = 4; i < lines.length; i++) {
         const line = lines[i];
-        const fields = line.split(','); // 各行をカンマで分割
-        if (fields[0] === '') return;
+        const fields = line.split(',');
+        if (fields[0] === '') break;
 
-        const waypoint = {
-          number: fields[0],
-          name: fields[1],
-          latitude: fields[2],
-          longitude: fields[3],
-          made_by: fields[10],
-          radius: fields[13], // meter
-          altitude: fields[14], // feet
+        const waypoint: Waypoint = {
+          number: Number(removeSpace(fields[0])),
+          name: removeSpace(fields[1]),
+          latitude: Number(removeSpace(fields[2])),
+          longitude: Number(removeSpace(fields[3])),
+          made_by: removeSpace(fields[10]),
+          radius: Number(removeSpace(fields[13])), // meter
+          altitude: Number(removeSpace(fields[14])), // feet
         };
         waypoints.push(waypoint);
-        handleClose();
-        // waypointsを親コンポーネントに渡す
-        onWaypointsLoaded(waypoints);
       }
+      if (onWaypointsLoaded === undefined) return;
+      // waypointsを親コンポーネントに渡す
+      onWaypointsLoaded(waypoints);
+      handleClose();
     };
-    console.log("waypoints");
-    console.log(waypoints);
     reader.readAsText(file);
   };
 

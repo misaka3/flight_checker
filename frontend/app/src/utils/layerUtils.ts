@@ -1,5 +1,6 @@
 import { ColumnLayer, IconLayer, ScatterplotLayer, SolidPolygonLayer } from '@deck.gl/layers/typed';
 import { getUtmCoordinates, mgrsToLatLon } from 'utils/coordinateUtils';
+import { Waypoint } from '../../types/interface';
 
 interface ColumnLayerObject {
   coordinates: [number, number];
@@ -283,4 +284,31 @@ export function layerIdChange(layers: any[]) {
   });
 
   return new_layers;
+}
+
+export function createWptLayer( waypoints: Waypoint[] ) {
+  const data = waypoints.map((waypoint: Waypoint) => {
+    const coordinate = [waypoint.longitude, waypoint.latitude];
+    return {
+      coordinates: coordinate,
+      radius: waypoint.radius,
+      altitude: waypoint.altitude ? waypoint.altitude : 10,
+      grid_type: false,
+      utm_coordinates: null,
+      color: [0, 255, 0, 255*0.3]
+    }
+  });
+  const layers = data.map((d: any) => {
+    return new ColumnLayer({
+      id: 'column-layer',
+      data: [d],
+      getPosition: (d) => d.coordinates,
+      getFillColor: (d) => d.color,
+      radius: d.radius,
+      // change altitude to meters from feet
+      getElevation: (d) => d.altitude / 3.28084,
+      pickable: true,
+    });
+  });
+  return layers;
 }

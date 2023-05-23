@@ -6,7 +6,7 @@ import RootMapbox from 'components/RootMapbox';
 import styles from 'styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
-import { createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
+import { createPzLayers, createScatterplotLayer, createWptLayer, layerIdChange } from 'utils/layerUtils';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
@@ -20,11 +20,6 @@ const RootPage = () => {
   const [file, setFile] = useState<File | null>(null);
   const [areas, setAreas] = useState([]);
   const [areaId, setAreaId] = useState<number>(1);
-  const [layers, setLayers] = useState<any[]>([]);
-  const [gpxLayer, setGpxLayer] = useState<any>();
-  const [pzLayers, setPzLayers] = useState<any[]>([]);
-  const [scatterplotLayer, setScatterplotLayer] = useState<any>();
-  const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
   const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
@@ -36,6 +31,14 @@ const RootPage = () => {
   const [firstAltitude, setFirstAltitude] = useState(); // geoJSONData.features[0].geometry.coordinates[0][2]
   const [minAltitude, setMinAltitude] = useState(0);
   const [maxAltitude, setMaxAltitude] = useState(0);
+  // layer
+  const [layers, setLayers] = useState<any[]>([]);
+  const [gpxLayer, setGpxLayer] = useState<any>();
+  const [pzLayers, setPzLayers] = useState<any[]>([]);
+  const [wptLayers, setWptLayers] = useState<any[]>([]);
+  const [scatterplotLayer, setScatterplotLayer] = useState<any>();
+  const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
+
 
   const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const flg = event.target.checked;
@@ -49,8 +52,13 @@ const RootPage = () => {
   };
 
   const handleWaypoints = (waypoints: Waypoint[]) => {
-    console.log("handleWaypoints");
-    console.log(waypoints);
+    if (waypoints && waypoints.length > 0) {
+      const wpt_layers = createWptLayer(waypoints);
+      setWptLayers(wpt_layers);
+      let new_layers = [...layers];
+      wpt_layers.map(wpt_layer => new_layers.push(wpt_layer));
+      setLayers([new_layers]);
+    }
   };
 
   const displayGpxFullPath = () => {
@@ -219,6 +227,9 @@ const RootPage = () => {
       const scatterplot_layer = createScatterplotLayer(geoJSONData, setHoverInfo, flg, minAltitude - firstAlt, maxAltitude - firstAlt);
       setScatterplotLayer(scatterplot_layer);
       new_layers.unshift(scatterplot_layer);
+    }
+    if (wptLayers.length > 0) {
+      wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
     }
     setLayers([new_layers]);
   };

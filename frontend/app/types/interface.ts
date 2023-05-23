@@ -1,9 +1,9 @@
 export interface Waypoint {
-  number: string;
+  number: number;
   name: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   made_by: string;
-  radius: string;
-  altitude: string;
+  radius: number;
+  altitude: number;
 };
