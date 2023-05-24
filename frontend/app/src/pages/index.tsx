@@ -13,6 +13,7 @@ import StopIcon from '@mui/icons-material/Stop';
 import Dialog from 'components/Dialog';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import CachedIcon from '@mui/icons-material/Cached';
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
 import { Waypoint } from '../../types/interface';
 
 const RootPage = () => {
@@ -308,8 +309,8 @@ const RootPage = () => {
               )}
             </Grid>
             <Grid item xs={1}>
-              <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}>
-                wpt追加
+              <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddLocationAltOutlinedIcon />} style={{backgroundColor: "#e0e0e0", color: "black", height: "50px", marginRight: "16px", borderRadius: "30px"}}>
+                option
               </Button>
               <Dialog
                 open={open}
