@@ -6,24 +6,21 @@ import RootMapbox from 'components/RootMapbox';
 import styles from 'styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
-import { createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
+import { createPzLayers, createScatterplotLayer, createWptLayer, layerIdChange } from 'utils/layerUtils';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import Dialog from 'components/Dialog';
 import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import CachedIcon from '@mui/icons-material/Cached';
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import { Waypoint } from '../../types/interface';
 
 const RootPage = () => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [areas, setAreas] = useState([]);
   const [areaId, setAreaId] = useState<number>(1);
-  const [layers, setLayers] = useState<any[]>([]);
-  const [gpxLayer, setGpxLayer] = useState<any>();
-  const [pzLayers, setPzLayers] = useState<any[]>([]);
-  const [scatterplotLayer, setScatterplotLayer] = useState<any>();
-  const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
   const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
@@ -35,6 +32,14 @@ const RootPage = () => {
   const [firstAltitude, setFirstAltitude] = useState(); // geoJSONData.features[0].geometry.coordinates[0][2]
   const [minAltitude, setMinAltitude] = useState(0);
   const [maxAltitude, setMaxAltitude] = useState(0);
+  // layer
+  const [layers, setLayers] = useState<any[]>([]);
+  const [gpxLayer, setGpxLayer] = useState<any>();
+  const [pzLayers, setPzLayers] = useState<any[]>([]);
+  const [wptLayers, setWptLayers] = useState<any[]>([]);
+  const [scatterplotLayer, setScatterplotLayer] = useState<any>();
+  const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
+
 
   const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const flg = event.target.checked;
@@ -47,14 +52,26 @@ const RootPage = () => {
     setScatterplotFlg(false);
   };
 
+  const handleWaypoints = (waypoints: Waypoint[]) => {
+    if (waypoints && waypoints.length > 0) {
+      const wpt_layers = createWptLayer(waypoints);
+      setWptLayers(wpt_layers);
+      let new_layers = [...layers];
+      wpt_layers.map(wpt_layer => new_layers.push(wpt_layer));
+      setLayers([new_layers]);
+    }
+  };
+
   const displayGpxFullPath = () => {
     setPlaying(false);
     setScatterplotFlg(true);
     setCurrentFrameIndex(0);
 
     let new_layers = [...pzLayers];
-    // new_layers.push(gpxLayer);
     new_layers.push(scatterplotLayer);
+    if (wptLayers.length > 0) {
+      wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+    }
     setLayers([new_layers]);
   };
 
@@ -82,8 +99,12 @@ const RootPage = () => {
     if (pzLayers && newScatterplotLayer) {
       let new_layers = [...pzLayers];
       new_layers.push(newScatterplotLayer);
+      if (wptLayers.length > 0) {
+        wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+      }
       setLayers(new_layers);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newScatterplotLayer, pzLayers]);
 
   const fetchAreas = async () => {
@@ -214,6 +235,9 @@ const RootPage = () => {
       setScatterplotLayer(scatterplot_layer);
       new_layers.unshift(scatterplot_layer);
     }
+    if (wptLayers.length > 0) {
+      wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+    }
     setLayers([new_layers]);
   };
 
@@ -290,7 +314,19 @@ const RootPage = () => {
                 <></>
               )}
             </Grid>
-            <Grid item xs={3}>
+            <Grid item xs={1}>
+              <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddLocationAltOutlinedIcon />} style={{backgroundColor: "#e0e0e0", color: "black", height: "50px", marginRight: "16px", borderRadius: "30px"}}>
+                option
+              </Button>
+              <Dialog
+                open={open}
+                // data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
+                string={'オブジェクト管理'}
+                onClose={handleClose}
+                onWaypointsLoaded={handleWaypoints}
+              />
+            </Grid>
+            <Grid item xs={2}>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
                 <FormGroup>
                   <FormControlLabel

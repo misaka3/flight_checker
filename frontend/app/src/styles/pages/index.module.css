@@ -32,7 +32,8 @@
 }
 
 .rootImg {
-  background-image: url('/sky_00136.jpg') !important;
+  position: relative;
+  background-image: url('/balloon.jpg') !important;
   background-size: cover !important;
   background-position: center !important;
   height: 100vh !important;
@@ -40,6 +41,16 @@
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
+}
+
+.rootImg::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .mapBackground {
@@ -89,6 +100,13 @@
 
 .gpxClearButton:hover {
   background-color: #ffe7e7 !important;
+}
+
+.wptLoadButton {
+  height: 50px !important;
+  width: 120px !important;
+  background-color: #fff !important;
+  border-radius: 10px !important;
 }
 
 .backRootButton {

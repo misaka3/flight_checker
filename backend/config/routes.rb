@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :waypoints
   resources :gpx_logs
   resources :tasks
   resources :flights
