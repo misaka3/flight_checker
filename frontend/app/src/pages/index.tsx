@@ -68,8 +68,10 @@ const RootPage = () => {
     setCurrentFrameIndex(0);
 
     let new_layers = [...pzLayers];
-    // new_layers.push(gpxLayer);
     new_layers.push(scatterplotLayer);
+    if (wptLayers.length > 0) {
+      wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+    }
     setLayers([new_layers]);
   };
 
@@ -97,8 +99,12 @@ const RootPage = () => {
     if (pzLayers && newScatterplotLayer) {
       let new_layers = [...pzLayers];
       new_layers.push(newScatterplotLayer);
+      if (wptLayers.length > 0) {
+        wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+      }
       setLayers(new_layers);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newScatterplotLayer, pzLayers]);
 
   const fetchAreas = async () => {
