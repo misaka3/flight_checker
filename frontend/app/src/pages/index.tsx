@@ -190,6 +190,17 @@ const RootPage = () => {
     return [firstAltitude, minAltitude, maxAltitude];
   };
 
+  const flatGeoJSON = (geoJSONData: any) => {
+    geoJSONData.features.forEach((d: any) => {
+      if (d.geometry.type === "MultiLineString") {
+        d.geometry.type = "LineString";
+        d.geometry.coordinates = d.geometry.coordinates.flat();
+        d.properties.coordinateProperties.times = d.properties.coordinateProperties.times.flat();
+      }
+    });
+    return geoJSONData;
+  };
+
   const handleButtonClick = (altitudeFlg: boolean) => {
     if (!file) {
       alert(".gpxファイルを選択してください");
@@ -209,17 +220,19 @@ const RootPage = () => {
         const parser = new DOMParser();
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
-        setGeoJSONData(geoJSONData.features);
-        const [firstAltitude, minAltitude, maxAltitude] = getMinMaxAltitude(geoJSONData.features[0].geometry);
+        const flatGeoJsonData = flatGeoJSON(geoJSONData);
+
+        setGeoJSONData(flatGeoJsonData.features);
+        const [firstAltitude, minAltitude, maxAltitude] = getMinMaxAltitude(flatGeoJsonData.features[0].geometry);
         setFirstAltitude(firstAltitude);
         setMinAltitude(minAltitude);
         setMaxAltitude(maxAltitude);
-        const scatterplot_off_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, false, minAltitude, maxAltitude);
+        const scatterplot_off_layer = createScatterplotLayer(flatGeoJsonData.features, setHoverInfo, false, minAltitude, maxAltitude);
         setScatterplotAltOffLayer(scatterplot_off_layer);
-        const scatterplot_on_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, true, minAltitude, maxAltitude);
+        const scatterplot_on_layer = createScatterplotLayer(flatGeoJsonData.features, setHoverInfo, true, minAltitude, maxAltitude);
         setScatterplotAltOnLayer(scatterplot_on_layer);
         new_layers.unshift(scatterplot_off_layer);
-        setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
+        setInitialCoordinates(getInitialCoordinates(flatGeoJsonData.features));
       }
       setLayers([new_layers]);
     };

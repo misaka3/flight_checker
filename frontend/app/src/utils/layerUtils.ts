@@ -75,14 +75,6 @@ function flattenGpxData(gpxDatas: any[], firstAltitude: number) {
 }
 
 export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, altitudeFlg = false, minAltitude = 0, maxAltitude = 0 ) {
-  gpxDatas.forEach(d => {
-    if (d.geometry.type === "MultiLineString") {
-      d.geometry.type = "LineString";
-      d.geometry.coordinates = d.geometry.coordinates.flat();
-      d.properties.coordinateProperties.times = d.properties.coordinateProperties.times.flat();
-    }
-  });
-
   const firstAltitude = altitudeFlg ? gpxDatas[0].geometry.coordinates[0][2] : 0;
   const flattenedGpxDatas = flattenGpxData(gpxDatas, firstAltitude);
   const scatterplotLayer = new ScatterplotLayer({
