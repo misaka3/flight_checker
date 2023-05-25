@@ -60,13 +60,17 @@ export function altitudeToColor(altitude: number, minAltitude: number, maxAltitu
 
 function flattenGpxData(gpxDatas: any[], firstAltitude: number) {
   return gpxDatas.flatMap(d =>
-    d.geometry.coordinates.map((coordinate: [number, number, number]) => ({
+    d.geometry.coordinates.map((coordinate: [number, number, number], index: number) => ({
       ...d,
       geometry: {
         ...d.geometry,
         coordinates: [coordinate[0], coordinate[1], coordinate[2] - firstAltitude],
       },
-    }))
+      properties: {
+        ...d.properties,
+        time: d.properties.coordinateProperties.times[index],
+      },
+    })),
   );
 }
 
@@ -95,13 +99,36 @@ export function createScatterplotLayer( gpxDatas: any[], setHoverInfo: any, alti
 function handleHover(info: any, setHoverInfo: any, firstAltitude: number) {
   const {object, x, y} = info;
   if (object) {
+    const jstDatetime = utcToJst(object.properties.time);
     const coordinates = object.geometry.coordinates;
     const coordinate = [coordinates[0], coordinates[1], coordinates[2] + firstAltitude];
 
-    setHoverInfo({coordinate, x, y});
+    setHoverInfo({coordinate, x, y, jstDatetime});
   } else {
     setHoverInfo(null);
   }
+}
+
+// UTC datetime changes to JST
+function utcToJst(utcDateStr: string) {
+  // utcDateStr: '2018-11-03T22:06:01Z';
+  let utcDate = new Date(utcDateStr);
+
+  let formatter = new Intl.DateTimeFormat('ja-JP', {
+    timeZone: 'Asia/Tokyo',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'short',
+  });
+
+  let datePart = formatter.format(utcDate);
+  let timePart = utcDate.toLocaleTimeString('ja-JP', { timeZone: 'Asia/Tokyo', hour12: false });
+
+  // 2桁になるようにパディングを追加
+  timePart = timePart.split(':').map((part) => part.padStart(2, '0')).join(':');
+
+  return `${datePart} ${timePart}`;
 }
 
 interface iconLayerObject {
