@@ -300,7 +300,7 @@ export function createWptLayer( waypoints: Waypoint[] ) {
   });
   const layers = data.map((d: any) => {
     return new ColumnLayer({
-      id: 'column-layer',
+      id: 'wpt-layer',
       data: [d],
       getPosition: (d) => d.coordinates,
       getFillColor: (d) => d.color,

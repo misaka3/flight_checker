@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { Box, Button, Grid, IconButton, Table, TableBody, TableCell, TableRow, TextField } from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, Table, TableBody, TableCell, TableRow, TextField } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import styles from 'styles/components/dialog.module.css';
 import axios from '../../lib/axiosInstance';
@@ -12,11 +12,16 @@ interface SimpleDialogProps {
   data?: FlightData;
   string: string;
   onClose: (value: string) => void;
-  onWaypointsLoaded?: (waypoints: Waypoint[]) => void;
+  onSaveOption: (waypoints: Waypoint[] | []) => void;
+  onAreaChange: (e: SelectChangeEvent<number>) => void;
+  onAltFlgChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  altFlg: boolean;
+  areaId: number;
+  areas: any[];
 }
 
 interface AddWptProps {
-  onWaypointsLoaded?: (waypoints: Waypoint[]) => void;
+  onWaypointsLoaded?: (waypoints: Waypoint[] | []) => void;
 };
 
 interface FlightData {
@@ -27,7 +32,7 @@ interface FlightData {
   maxAltitude: string;
 }
 
-const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose, onWaypointsLoaded }) => {
+const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose, onSaveOption, onAreaChange, onAltFlgChange, altFlg, areaId, areas }) => {
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState<DialogProps['maxWidth']>('md');
   const [file, setFile] = useState<File | null>(null);
@@ -66,60 +71,76 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
     return str.replace(/^\s+|\s+$/g, '');
   };
 
-  const AddWpt = ({ onWaypointsLoaded }: AddWptProps) => {
-    if (!file) {
-      alert(".wptファイルを選択してください");
-      return;
+  const saveOption = async () => {
+    if (onSaveOption === undefined) return;
+
+    let waypoints = await AddWpt();
+
+    if (waypoints === undefined) {
+      waypoints = [];
     }
+    onSaveOption(waypoints);
+  };
 
-    let waypoints: Waypoint[] = [];
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      if (!event || !event.target) {
-        alert("ファイルの読み込みに失敗しました");
-        console.log(event);
-        return;
-      }
-      const data = event.target.result;
-      if (typeof data !== 'string') {
-        alert("ファイルの読み込みに失敗しました");
-        console.log(data);
+  const AddWpt = () => {
+    return new Promise<Waypoint[]>((resolve, reject) => {
+      let waypoints: Waypoint[] = [];
+      if (!file) {
+        handleClose();
+        resolve(waypoints);
         return;
       }
 
-      // wptテーブルに保存する
-      createWaypoint(file.name, data);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (!event || !event.target) {
+          alert("ファイルの読み込みに失敗しました");
+          console.log(event);
+          return;
+        }
+        const data = event.target.result;
+        if (typeof data !== 'string') {
+          alert("ファイルの読み込みに失敗しました");
+          console.log(data);
+          return;
+        }
 
-      const lines = data.split('\n');
-      if (lines[0].indexOf('OziExplorer') === -1) {
-        alert('OziExplorerのwptファイルのみインポート可能です');
-        return;
+        // wptテーブルに保存する
+        createWaypoint(file.name, data);
+
+        const lines = data.split('\n');
+        if (lines[0].indexOf('OziExplorer') === -1) {
+          alert('OziExplorerのwptファイルのみインポート可能です');
+          return;
+        }
+
+        // 最初の4行はヘッダ情報なので無視
+        for (let i = 4; i < lines.length; i++) {
+          const line = lines[i];
+          const fields = line.split(',');
+          if (fields[0] === '') break;
+
+          const waypoint: Waypoint = {
+            number: Number(removeSpace(fields[0])),
+            name: removeSpace(fields[1]),
+            latitude: Number(removeSpace(fields[2])),
+            longitude: Number(removeSpace(fields[3])),
+            made_by: removeSpace(fields[10]),
+            radius: Number(removeSpace(fields[13])), // meter
+            altitude: Number(removeSpace(fields[14])), // feet
+          };
+          waypoints.push(waypoint);
+        }
+
+        handleClose();
+        resolve(waypoints);
+      };
+      reader.onerror = (event) => {
+        console.error("File could not be read");
+        reject(new Error("File could not be read"));
       }
-
-      // 最初の4行はヘッダ情報なので無視
-      for (let i = 4; i < lines.length; i++) {
-        const line = lines[i];
-        const fields = line.split(',');
-        if (fields[0] === '') break;
-
-        const waypoint: Waypoint = {
-          number: Number(removeSpace(fields[0])),
-          name: removeSpace(fields[1]),
-          latitude: Number(removeSpace(fields[2])),
-          longitude: Number(removeSpace(fields[3])),
-          made_by: removeSpace(fields[10]),
-          radius: Number(removeSpace(fields[13])), // meter
-          altitude: Number(removeSpace(fields[14])), // feet
-        };
-        waypoints.push(waypoint);
-      }
-      if (onWaypointsLoaded === undefined) return;
-      // waypointsを親コンポーネントに渡す
-      onWaypointsLoaded(waypoints);
-      handleClose();
-    };
-    reader.readAsText(file);
+      reader.readAsText(file);
+    });
   };
 
   return (
@@ -144,6 +165,32 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
       )}
       { string === 'オブジェクト管理' && (
         <div className={styles.dialogForm}>
+          {/* PZ表示のセレクトフォーム */}
+          <FormControl fullWidth required>
+            <InputLabel>PZ表示</InputLabel>
+            <Select
+              label="PZ表示"
+              value={areaId}
+              onChange={onAreaChange}
+              style={{ height: '50px', backgroundColor: 'white' }}
+            >
+              {areas.map((area: any) => (
+                <MenuItem key={area.id} value={area.id}>
+                  {area.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {/* 高度補正のSwitch */}
+          <FormGroup>
+            <FormControlLabel
+              control={<Switch checked={altFlg} onChange={onAltFlgChange} color="default" />}
+              label="高度補正"
+              style={{ height: "50px", marginRight: "24px" }}
+            />
+          </FormGroup>
+
           <Box mb={3}>
             <Grid container spacing={2} alignItems="center">
               <Grid item>
@@ -178,9 +225,9 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
               <Button
                 variant="contained"
                 color="primary"
-                onClick={() => AddWpt({ onWaypointsLoaded })}
+                onClick={() => saveOption()}
               >
-                wptを描画
+                保存
               </Button>
             </Grid>
           </Grid>
