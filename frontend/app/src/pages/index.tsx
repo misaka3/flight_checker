@@ -31,6 +31,7 @@ const RootPage = () => {
   const [firstAltitude, setFirstAltitude] = useState(); // geoJSONData.features[0].geometry.coordinates[0][2]
   const [minAltitude, setMinAltitude] = useState(0);
   const [maxAltitude, setMaxAltitude] = useState(0);
+  const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
   // layer
   const [layers, setLayers] = useState<any[]>([]);
   const [pzLayers, setPzLayers] = useState<any[]>([]);
@@ -129,7 +130,8 @@ const RootPage = () => {
     setAreaId(Number(e.target.value));
   };
 
-  const handleSaveOption = async (waypoints: Waypoint[] | []) => {
+  const handleSaveOption = async (waypoints: Waypoint[] | [], mapStyle: string) => {
+    setSelectedStyle(mapStyle);
     let new_layers: any[] = [];
     try {
       // create scatterplot_layer
@@ -260,7 +262,7 @@ const RootPage = () => {
     layers.length > 0 && initialCoordinates ? (
       <div className={styles.mapBackground}>
         <div className={styles.mapboxArea}>
-          <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
+          <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} selectedStyle={selectedStyle}/>
         </div>
         <Box className={styles.container}>
           <Grid container spacing={2}>

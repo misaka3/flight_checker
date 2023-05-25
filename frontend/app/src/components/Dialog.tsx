@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, Table, TableBody, TableCell, TableRow, TextField } from '@mui/material';
+import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, Table, TableBody, TableCell, TableRow, TextField } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import styles from 'styles/components/dialog.module.css';
 import axios from '../../lib/axiosInstance';
@@ -12,7 +12,7 @@ interface SimpleDialogProps {
   data?: FlightData;
   string: string;
   onClose: (value: string) => void;
-  onSaveOption: (waypoints: Waypoint[] | []) => void;
+  onSaveOption: (waypoints: Waypoint[] | [], mapStyle: string) => void;
   onAreaChange: (e: SelectChangeEvent<number>) => void;
   onAltFlgChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   altFlg: boolean;
@@ -36,6 +36,11 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState<DialogProps['maxWidth']>('md');
   const [file, setFile] = useState<File | null>(null);
+  const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
+
+  const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSelectedStyle(event.target.value);
+  };
 
   const createWaypoint = async (filename: string, data: string) => {
     try {
@@ -79,7 +84,7 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
     if (waypoints === undefined) {
       waypoints = [];
     }
-    onSaveOption(waypoints);
+    onSaveOption(waypoints, selectedStyle);
   };
 
   const AddWpt = () => {
@@ -165,6 +170,14 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
       )}
       { string === 'オブジェクト管理' && (
         <div className={styles.dialogForm}>
+          <RadioGroup name="rtoggle" value={selectedStyle} onChange={handleStyleChange} style={{ flexDirection: "row" }}>
+            <FormControlLabel value="mapbox://styles/mapbox/satellite-v9" control={<Radio />} label="satellite" />
+            <FormControlLabel value="mapbox://styles/mapbox/light-v10" control={<Radio />} label="light" />
+            <FormControlLabel value="mapbox://styles/mapbox/dark-v10" control={<Radio />} label="dark" />
+            <FormControlLabel value="mapbox://styles/mapbox/streets-v11" control={<Radio />} label="streets" />
+            <FormControlLabel value="mapbox://styles/mapbox/outdoors-v11" control={<Radio />} label="outdoors" />
+          </RadioGroup>
+
           {/* PZ表示のセレクトフォーム */}
           <FormControl fullWidth required>
             <InputLabel>PZ表示</InputLabel>
