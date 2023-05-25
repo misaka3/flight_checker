@@ -1,29 +1,25 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
-import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, MenuItem, Select, SelectChangeEvent, Switch, TextField } from '@mui/material';
+import { Box, Button, Grid, IconButton, SelectChangeEvent, TextField } from '@mui/material';
 import RootMapbox from 'components/RootMapbox';
 import styles from 'styles/pages/index.module.css';
 import axios from '../../lib/axiosInstance';
 import { gpx } from '@tmcw/togeojson';
-import { createPzLayers, createScatterplotLayer, layerIdChange } from 'utils/layerUtils';
+import { createPzLayers, createScatterplotLayer, createWptLayer, layerIdChange } from 'utils/layerUtils';
 import { getInitialCoordinates } from 'utils/coordinateUtils';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import StopIcon from '@mui/icons-material/Stop';
 import Dialog from 'components/Dialog';
-import SportsScoreIcon from '@mui/icons-material/SportsScore';
 import CachedIcon from '@mui/icons-material/Cached';
+import AddLocationAltOutlinedIcon from '@mui/icons-material/AddLocationAltOutlined';
+import { Waypoint } from '../../types/interface';
 
 const RootPage = () => {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [areas, setAreas] = useState([]);
   const [areaId, setAreaId] = useState<number>(1);
-  const [layers, setLayers] = useState<any[]>([]);
-  const [gpxLayer, setGpxLayer] = useState<any>();
-  const [pzLayers, setPzLayers] = useState<any[]>([]);
-  const [scatterplotLayer, setScatterplotLayer] = useState<any>();
-  const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
   const [currentFrameIndex, setCurrentFrameIndex] = useState<number>(0);
   const [initialCoordinates, setInitialCoordinates] = useState<[number, number]>();
   const [hoverInfo, setHoverInfo] = useState(null);
@@ -35,11 +31,17 @@ const RootPage = () => {
   const [firstAltitude, setFirstAltitude] = useState(); // geoJSONData.features[0].geometry.coordinates[0][2]
   const [minAltitude, setMinAltitude] = useState(0);
   const [maxAltitude, setMaxAltitude] = useState(0);
+  // layer
+  const [layers, setLayers] = useState<any[]>([]);
+  const [pzLayers, setPzLayers] = useState<any[]>([]);
+  const [wptLayers, setWptLayers] = useState<any[]>([]);
+  const [scatterplotAltOffLayer, setScatterplotAltOffLayer] = useState<any>();
+  const [scatterplotAltOnLayer, setScatterplotAltOnLayer] = useState<any>();
+  const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
 
   const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const flg = event.target.checked;
     setAltFlg(flg);
-    handleAltChangeClick(flg);
   };
 
   const gpxAnimationSwitch = (flg: boolean) => {
@@ -52,10 +54,20 @@ const RootPage = () => {
     setScatterplotFlg(true);
     setCurrentFrameIndex(0);
 
-    let new_layers = [...pzLayers];
-    // new_layers.push(gpxLayer);
-    new_layers.push(scatterplotLayer);
-    setLayers([new_layers]);
+    let new_layers: any[] = [];
+    if (pzLayers.length > 0) {
+      new_layers = [...pzLayers];
+    }
+    if (wptLayers.length > 0) {
+      wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+    }
+    if (altFlg) {
+      new_layers.unshift(scatterplotAltOnLayer);
+    } else {
+      new_layers.unshift(scatterplotAltOffLayer);
+    }
+    setNewScatterplotLayer(undefined);
+    setLayers(new_layers);
   };
 
   // gpxLayer(scatterplotLayer)'s timelapsed animation
@@ -82,8 +94,12 @@ const RootPage = () => {
     if (pzLayers && newScatterplotLayer) {
       let new_layers = [...pzLayers];
       new_layers.push(newScatterplotLayer);
+      if (wptLayers.length > 0) {
+        wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
+      }
       setLayers(new_layers);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [newScatterplotLayer, pzLayers]);
 
   const fetchAreas = async () => {
@@ -113,20 +129,17 @@ const RootPage = () => {
     setAreaId(Number(e.target.value));
   };
 
-  useEffect(() => {
-    displayPzLayers();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [areaId]);
-
-  const displayPzLayers = async () => {
-    let new_layers = [];
-    if (scatterplotFlg) {
-      new_layers = [gpxLayer, scatterplotLayer];
-    } else {
-      new_layers = [newScatterplotLayer];
-    }
-
+  const handleSaveOption = async (waypoints: Waypoint[] | []) => {
+    let new_layers: any[] = [];
     try {
+      // create scatterplot_layer
+      if (altFlg) {
+        new_layers = [scatterplotAltOnLayer];
+      } else {
+        new_layers = [scatterplotAltOffLayer];
+      }
+
+      // create pz_layers
       const response = await axios.get(`/areas/${areaId}`);
 
       if (response.data.prohibited_zones) {
@@ -135,12 +148,21 @@ const RootPage = () => {
         setPzLayers(pz_layers);
         pz_layers.map(pz_layer => new_layers.push(pz_layer));
       }
+
+      // create wpt_layers
+      if (waypoints && waypoints.length > 0) {
+        let wpt_layers = createWptLayer(waypoints);
+        wpt_layers = layerIdChange(wpt_layers);
+        setWptLayers(wpt_layers);
+        wpt_layers.map(wpt_layer => new_layers.push(wpt_layer));
+      }
+
       setLayers(new_layers);
     } catch (error) {
       console.error(error);
     }
   };
-  
+
   const createGpxLog = async (filename: string) => {
     try {
       await axios.post('/gpx_logs', {
@@ -152,7 +174,6 @@ const RootPage = () => {
   };
   
   const getMinMaxAltitude = (geometry: any) => {
-    console.log("getMinMaxAltitude");
     const coordinates = geometry.coordinates;
     const firstAltitude = coordinates[0][2];
     let minAltitude = firstAltitude;
@@ -193,28 +214,16 @@ const RootPage = () => {
         setFirstAltitude(firstAltitude);
         setMinAltitude(minAltitude);
         setMaxAltitude(maxAltitude);
-        const scatterplot_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, altitudeFlg, minAltitude, maxAltitude);
-        setScatterplotLayer(scatterplot_layer);
-        new_layers.unshift(scatterplot_layer);
+        const scatterplot_off_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, false, minAltitude, maxAltitude);
+        setScatterplotAltOffLayer(scatterplot_off_layer);
+        const scatterplot_on_layer = createScatterplotLayer(geoJSONData.features, setHoverInfo, true, minAltitude, maxAltitude);
+        setScatterplotAltOnLayer(scatterplot_on_layer);
+        new_layers.unshift(scatterplot_off_layer);
         setInitialCoordinates(getInitialCoordinates(geoJSONData.features));
       }
       setLayers([new_layers]);
     };
     reader.readAsText(file);
-  };
-
-  const handleAltChangeClick = (flg: boolean) => {
-    let new_layers: any[] = [];
-    if (pzLayers.length > 0) {
-      new_layers = [...pzLayers];
-    }
-    if (firstAltitude) {
-      const firstAlt = flg ? firstAltitude : 0;
-      const scatterplot_layer = createScatterplotLayer(geoJSONData, setHoverInfo, flg, minAltitude - firstAlt, maxAltitude - firstAlt);
-      setScatterplotLayer(scatterplot_layer);
-      new_layers.unshift(scatterplot_layer);
-    }
-    setLayers([new_layers]);
   };
 
   const handleFlightLogClick = () => {
@@ -252,21 +261,7 @@ const RootPage = () => {
               </Button>
             </Grid>
             <Grid item xs={2}>
-              <FormControl fullWidth required>
-                <InputLabel>PZ表示</InputLabel>
-                <Select
-                  label="PZ表示"
-                  value={areaId}
-                  onChange={handleAreaChange}
-                  style={{ height: '50px', backgroundColor: 'white' }}
-                >
-                  {areas.map((area: any) => (
-                    <MenuItem key={area.id} value={area.id}>
-                      {area.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+              <></>
             </Grid>
             <Grid item xs={2}>
               <div style={{ textAlign: "center" }}>
@@ -292,30 +287,21 @@ const RootPage = () => {
             </Grid>
             <Grid item xs={3}>
               <div style={{ display: "flex", justifyContent: "flex-end" }}>
-                <FormGroup>
-                  <FormControlLabel
-                    control={<Switch checked={altFlg} onChange={handleAltFlgChange} color="default" />}
-                    label="高度補正"
-                    style={{ color: "white", height: "50px", marginRight: "24px" }}
-                  />
-                </FormGroup>
-                {/* <Button
-                  variant="outlined"
-                  style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "24px", borderRadius: "30px"}}
-                  onClick={() => handleButtonClick(true)}
-                >
-                  高度を補正する
-                </Button> */}
-                {/* <Button variant="outlined" onClick={handleClickOpen} startIcon={<SportsScoreIcon />} style={{backgroundColor: "#fff", color: "black", height: "50px", marginRight: "16px"}}>
-                  フライトログ
+                <Button variant="outlined" onClick={handleClickOpen} startIcon={<AddLocationAltOutlinedIcon />} style={{backgroundColor: "#e0e0e0", color: "black", height: "50px", marginRight: "16px", borderRadius: "30px"}}>
+                  option
                 </Button>
                 <Dialog
                   open={open}
-                  // TODO: Change data to flight log data
-                  data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
-                  string={'フライトログ'}
+                  // data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
+                  string={'オブジェクト管理'}
                   onClose={handleClose}
-                /> */}
+                  onSaveOption={handleSaveOption}
+                  onAreaChange={handleAreaChange}
+                  onAltFlgChange={handleAltFlgChange}
+                  altFlg={altFlg}
+                  areaId={areaId}
+                  areas={areas}
+                />
               </div>
             </Grid>
           </Grid>
