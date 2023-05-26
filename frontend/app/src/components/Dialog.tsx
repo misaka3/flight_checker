@@ -226,20 +226,20 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
 
             <div className={styles.listItem}>
               <Typography variant="h6" gutterBottom>
-                高度補正
+                  高度補正
               </Typography>
               <ToggleButtonGroup
-                color="primary"
-                value={altFlg}
-                exclusive
-                onChange={(event, newValue) => onAltFlgChange(newValue)}
-                aria-label="Platform"
+                  color="primary"
+                  value={altFlg}
+                  exclusive
+                  onChange={(event, newValue) => onAltFlgChange(newValue)}
+                  aria-label="Platform"
+                  style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
               >
-                <ToggleButton value={false}>Off</ToggleButton>
-                <ToggleButton value={true}>On</ToggleButton>
+                  <ToggleButton value={false} className={styles.toggleButton}>Off</ToggleButton>
+                  <ToggleButton value={true} className={styles.toggleButton}>On</ToggleButton>
               </ToggleButtonGroup>
-            </div>
-
+          </div>
             <Divider className={styles.divider} />
 
             <div className={styles.listItem}>

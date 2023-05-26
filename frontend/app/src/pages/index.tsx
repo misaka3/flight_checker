@@ -41,6 +41,8 @@ const RootPage = () => {
   const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
 
   const handleAltFlgChange = (newValue: boolean) => {
+    if (newValue === null) return;
+
     setAltFlg(newValue);
   };
 

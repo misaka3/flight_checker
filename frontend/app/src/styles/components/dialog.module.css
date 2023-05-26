@@ -21,3 +21,7 @@
 .divider {
   margin-bottom: 10px !important;
 }
+
+.toggleButton {
+  width: 100px !important;
+}
