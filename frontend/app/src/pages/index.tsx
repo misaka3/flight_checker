@@ -309,7 +309,7 @@ const RootPage = () => {
                 <Dialog
                   open={open}
                   // data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
-                  string={'オブジェクト管理'}
+                  string={'オプション'}
                   onClose={handleClose}
                   onSaveOption={handleSaveOption}
                   onAreaChange={handleAreaChange}

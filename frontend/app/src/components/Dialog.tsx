@@ -164,7 +164,7 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
           </TableBody>
           </Table>
       )}
-      { string === 'オブジェクト管理' && (
+      { string === 'オプション' && (
         <div className={styles.dialogForm}>
           <List
             sx={{
