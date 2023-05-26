@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
-import ReactMap, { AttributionControl, ViewState } from "react-map-gl";
+import React, { useState } from "react";
+import ReactMap, { ViewState } from "react-map-gl";
 import DeckGL from "@deck.gl/react/typed";
-import { latLonToMGRS } from "../utils/coordinateUtils";
-import { Box, FormControlLabel, Grid, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 
 const MAPBOX_ACCESS_TOKEN = process.env.NEXT_PUBLIC_MapboxAccessToken;
 
@@ -42,7 +40,7 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
       pitch: params.viewState.pitch,
       bearing: params.viewState.bearing,
     };
-  
+
     setViewState(viewport);
   };
 

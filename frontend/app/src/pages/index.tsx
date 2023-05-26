@@ -194,13 +194,24 @@ const RootPage = () => {
   };
 
   const flatGeoJSON = (geoJSONData: any) => {
+    let unsupportedGeometry = false;
+
     geoJSONData.features.forEach((d: any) => {
-      if (d.geometry.type === "MultiLineString") {
+      if (d.geometry.type !== "LineString" && d.geometry.type !== "MultiLineString") {
+        unsupportedGeometry = true;
+        alert("geometry.typeが未対応です。LineStringかMultiLineStringのファイルを選択してください。");
+        return;
+      } else if (d.geometry.type === "MultiLineString") {
         d.geometry.type = "LineString";
         d.geometry.coordinates = d.geometry.coordinates.flat();
         d.properties.coordinateProperties.times = d.properties.coordinateProperties.times.flat();
       }
     });
+
+    if (unsupportedGeometry) {
+      return;
+    }
+
     return geoJSONData;
   };
 
@@ -224,6 +235,9 @@ const RootPage = () => {
         const gpxXML = parser.parseFromString(gpxText, 'application/xml');
         const geoJSONData = gpx(gpxXML);
         const flatGeoJsonData = flatGeoJSON(geoJSONData);
+        if (flatGeoJsonData === undefined) {
+          return;
+        }
 
         setGeoJSONData(flatGeoJsonData.features);
         const [firstAltitude, minAltitude, maxAltitude] = getMinMaxAltitude(flatGeoJsonData.features[0].geometry);
@@ -236,6 +250,9 @@ const RootPage = () => {
         setScatterplotAltOnLayer(scatterplot_on_layer);
         new_layers.unshift(scatterplot_off_layer);
         setInitialCoordinates(getInitialCoordinates(flatGeoJsonData.features));
+      } else {
+        alert("ファイルの中身に問題があります");
+        return;
       }
       setLayers([new_layers]);
     };
