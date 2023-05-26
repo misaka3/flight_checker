@@ -31,6 +31,7 @@ const RootPage = () => {
   const [firstAltitude, setFirstAltitude] = useState(); // geoJSONData.features[0].geometry.coordinates[0][2]
   const [minAltitude, setMinAltitude] = useState(0);
   const [maxAltitude, setMaxAltitude] = useState(0);
+  const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
   // layer
   const [layers, setLayers] = useState<any[]>([]);
   const [pzLayers, setPzLayers] = useState<any[]>([]);
@@ -39,9 +40,10 @@ const RootPage = () => {
   const [scatterplotAltOnLayer, setScatterplotAltOnLayer] = useState<any>();
   const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
 
-  const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const flg = event.target.checked;
-    setAltFlg(flg);
+  const handleAltFlgChange = (newValue: boolean) => {
+    if (newValue === null) return;
+
+    setAltFlg(newValue);
   };
 
   const gpxAnimationSwitch = (flg: boolean) => {
@@ -129,7 +131,8 @@ const RootPage = () => {
     setAreaId(Number(e.target.value));
   };
 
-  const handleSaveOption = async (waypoints: Waypoint[] | []) => {
+  const handleSaveOption = async (waypoints: Waypoint[] | [], mapStyle: string) => {
+    setSelectedStyle(mapStyle);
     let new_layers: any[] = [];
     try {
       // create scatterplot_layer
@@ -260,7 +263,7 @@ const RootPage = () => {
     layers.length > 0 && initialCoordinates ? (
       <div className={styles.mapBackground}>
         <div className={styles.mapboxArea}>
-          <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} />
+          <RootMapbox layers={layers} initialCoordinates={initialCoordinates} hoverInfo={hoverInfo} selectedStyle={selectedStyle}/>
         </div>
         <Box className={styles.container}>
           <Grid container spacing={2}>
@@ -306,7 +309,7 @@ const RootPage = () => {
                 <Dialog
                   open={open}
                   // data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
-                  string={'オブジェクト管理'}
+                  string={'オプション'}
                   onClose={handleClose}
                   onSaveOption={handleSaveOption}
                   onAreaChange={handleAreaChange}

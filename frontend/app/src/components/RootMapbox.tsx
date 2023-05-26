@@ -11,6 +11,7 @@ interface MapboxProps {
   initialCoordinates?: number[];
   initialViewState?: ViewStateType;
   hoverInfo?: any;
+  selectedStyle?: string;
 }
 
 interface ViewStateType {
@@ -21,8 +22,7 @@ interface ViewStateType {
   bearing: number;
 }
 
-const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], initialViewState, hoverInfo }) => {
-  const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
+const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], initialViewState, hoverInfo, selectedStyle }) => {
   const defaultViewState: ViewStateType = {
     longitude: initialCoordinates.length > 0 ? initialCoordinates[0] : 130.300,
     latitude: initialCoordinates.length > 0 ? initialCoordinates[1] : 33.265,
@@ -44,10 +44,6 @@ const Mapbox: React.FC<MapboxProps> = ({ layers = [], initialCoordinates = [], i
     };
   
     setViewState(viewport);
-  };
-
-  const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedStyle(event.target.value);
   };
 
   return (
