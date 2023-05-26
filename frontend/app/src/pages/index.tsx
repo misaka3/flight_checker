@@ -40,9 +40,8 @@ const RootPage = () => {
   const [scatterplotAltOnLayer, setScatterplotAltOnLayer] = useState<any>();
   const [newScatterplotLayer, setNewScatterplotLayer] = useState<any>();
 
-  const handleAltFlgChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const flg = event.target.checked;
-    setAltFlg(flg);
+  const handleAltFlgChange = (newValue: boolean) => {
+    setAltFlg(newValue);
   };
 
   const gpxAnimationSwitch = (flg: boolean) => {

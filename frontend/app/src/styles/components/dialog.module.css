@@ -1,5 +1,7 @@
 .dialogForm {
-  margin: 20px !important;
+  width: 80% !important;
+  margin: auto !important;
+  margin-bottom: 20px !important;
 }
 
 .inputWptField {
@@ -10,4 +12,12 @@
 
 .fileUploadButton {
   display: none !important;
+}
+
+.listItem {
+  margin-bottom: 20px !important;
+}
+
+.divider {
+  margin-bottom: 10px !important;
 }

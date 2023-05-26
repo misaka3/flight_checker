@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { Box, Button, FormControl, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Switch, Table, TableBody, TableCell, TableRow, TextField } from '@mui/material';
+import { Box, Button, Divider, FormControl, FormControlLabel, Grid, IconButton, List, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Table, TableBody, TableCell, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import styles from 'styles/components/dialog.module.css';
 import axios from '../../lib/axiosInstance';
@@ -14,15 +14,11 @@ interface SimpleDialogProps {
   onClose: (value: string) => void;
   onSaveOption: (waypoints: Waypoint[] | [], mapStyle: string) => void;
   onAreaChange: (e: SelectChangeEvent<number>) => void;
-  onAltFlgChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onAltFlgChange: (newValue: boolean) => void;
   altFlg: boolean;
   areaId: number;
   areas: any[];
 }
-
-interface AddWptProps {
-  onWaypointsLoaded?: (waypoints: Waypoint[] | []) => void;
-};
 
 interface FlightData {
   date: string;
@@ -170,69 +166,118 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
       )}
       { string === 'オブジェクト管理' && (
         <div className={styles.dialogForm}>
-          <RadioGroup name="rtoggle" value={selectedStyle} onChange={handleStyleChange} style={{ flexDirection: "row" }}>
-            <FormControlLabel value="mapbox://styles/mapbox/satellite-v9" control={<Radio />} label="satellite" />
-            <FormControlLabel value="mapbox://styles/mapbox/light-v10" control={<Radio />} label="light" />
-            <FormControlLabel value="mapbox://styles/mapbox/dark-v10" control={<Radio />} label="dark" />
-            <FormControlLabel value="mapbox://styles/mapbox/streets-v11" control={<Radio />} label="streets" />
-            <FormControlLabel value="mapbox://styles/mapbox/outdoors-v11" control={<Radio />} label="outdoors" />
-          </RadioGroup>
+          <List
+            sx={{
+              width: '100%',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <div className={styles.listItem}>
+              <Typography variant="h6" gutterBottom>
+                Map Style
+              </Typography>
+              <RadioGroup name="rtoggle" value={selectedStyle} onChange={handleStyleChange} style={{ flexDirection: "row" }}>
+                <Grid container spacing={1} >
+                  <Grid item xs={1}>
+                    <></>
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControlLabel value="mapbox://styles/mapbox/satellite-v9" control={<Radio />} label="satellite" />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControlLabel value="mapbox://styles/mapbox/light-v10" control={<Radio />} label="light" />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControlLabel value="mapbox://styles/mapbox/dark-v10" control={<Radio />} label="dark" />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControlLabel value="mapbox://styles/mapbox/streets-v11" control={<Radio />} label="streets" />
+                  </Grid>
+                  <Grid item xs={2}>
+                    <FormControlLabel value="mapbox://styles/mapbox/outdoors-v11" control={<Radio />} label="outdoors" />
+                  </Grid>
+                  <Grid item xs={1}>
+                    <></>
+                  </Grid>
+                </Grid>
+              </RadioGroup>
+            </div>
+            <Divider className={styles.divider} />
 
-          {/* PZ表示のセレクトフォーム */}
-          <FormControl fullWidth required>
-            <InputLabel>PZ表示</InputLabel>
-            <Select
-              label="PZ表示"
-              value={areaId}
-              onChange={onAreaChange}
-              style={{ height: '50px', backgroundColor: 'white' }}
-            >
-              {areas.map((area: any) => (
-                <MenuItem key={area.id} value={area.id}>
-                  {area.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            <div className={styles.listItem}>
+              <Typography variant="h6" gutterBottom>
+                PZ表示
+              </Typography>
+              <FormControl fullWidth required>
+                <Select
+                  value={areaId}
+                  onChange={onAreaChange}
+                  style={{ height: '50px', backgroundColor: 'white' }}
+                >
+                  {areas.map((area: any) => (
+                    <MenuItem key={area.id} value={area.id}>
+                      {area.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <Divider className={styles.divider} />
 
-          {/* 高度補正のSwitch */}
-          <FormGroup>
-            <FormControlLabel
-              control={<Switch checked={altFlg} onChange={onAltFlgChange} color="default" />}
-              label="高度補正"
-              style={{ height: "50px", marginRight: "24px" }}
-            />
-          </FormGroup>
+            <div className={styles.listItem}>
+              <Typography variant="h6" gutterBottom>
+                高度補正
+              </Typography>
+              <ToggleButtonGroup
+                color="primary"
+                value={altFlg}
+                exclusive
+                onChange={(event, newValue) => onAltFlgChange(newValue)}
+                aria-label="Platform"
+              >
+                <ToggleButton value={false}>Off</ToggleButton>
+                <ToggleButton value={true}>On</ToggleButton>
+              </ToggleButtonGroup>
+            </div>
 
-          <Box mb={3}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                <input
-                  id="file-upload-button"
-                  type="file"
-                  accept=".wpt"
-                  onChange={handleFileUpload}
-                  className={styles.fileUploadButton}
-                />
-                <label htmlFor="file-upload-button">
-                  <IconButton color="default" component="span" aria-label="upload file" sx={{color: '#28282a'}}>
-                    <AttachFileIcon />
-                  </IconButton>
-                </label>
-              </Grid>
-              <Grid item xs>
-                <TextField
-                  variant="outlined"
-                  fullWidth
-                  disabled
-                  value={file ? file.name : '.wptファイルを選択してください'}
-                  InputProps={{
-                    className: styles.inputWptField,
-                  }}
-                />
-              </Grid>
-            </Grid>
-          </Box>
+            <Divider className={styles.divider} />
+
+            <div className={styles.listItem}>
+              <Typography variant="h6" gutterBottom>
+                wptファイル読み込み
+              </Typography>
+              <Box mb={3}>
+                <Grid container spacing={2} alignItems="center">
+                  <Grid item>
+                    <input
+                      id="file-upload-button"
+                      type="file"
+                      accept=".wpt"
+                      onChange={handleFileUpload}
+                      className={styles.fileUploadButton}
+                    />
+                    <label htmlFor="file-upload-button">
+                      <IconButton color="default" component="span" aria-label="upload file" sx={{color: '#28282a'}}>
+                        <AttachFileIcon />
+                      </IconButton>
+                    </label>
+                  </Grid>
+                  <Grid item xs>
+                    <TextField
+                      variant="outlined"
+                      fullWidth
+                      disabled
+                      value={file ? file.name : '.wptファイルを選択してください'}
+                      InputProps={{
+                        className: styles.inputWptField,
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
+            </div>
+          </List>
+
           <Grid container style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end' }}>
             <Grid item>
               <Button
