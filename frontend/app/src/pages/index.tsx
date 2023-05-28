@@ -166,10 +166,16 @@ const RootPage = () => {
     }
   };
 
-  const createGpxLog = async (filename: string) => {
+  const createGpxLog = async (file: any,filename: string) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('filename', filename);
+
     try {
-      await axios.post('/gpx_logs', {
-        file_name: filename
+      await axios.post('/gpx_logs', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       });
     } catch (error) {
       console.error(error);
@@ -221,7 +227,7 @@ const RootPage = () => {
       return;
     }
 
-    createGpxLog(file.name);
+    createGpxLog(file, file.name);
 
     const reader = new FileReader();
     let new_layers: any[] = [];
