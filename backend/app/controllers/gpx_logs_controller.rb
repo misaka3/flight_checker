@@ -1,5 +1,6 @@
 class GpxLogsController < ApplicationController
   before_action :set_gpx_log, only: %i[ show update destroy ]
+  require 'aws-sdk-s3'
 
   # GET /gpx_logs
   def index
@@ -15,7 +16,8 @@ class GpxLogsController < ApplicationController
 
   # POST /gpx_logs
   def create
-    @gpx_log = GpxLog.new(gpx_log_params)
+    @gpx_log = GpxLog.new(file_name: params[:filename])
+    upload_to_s3(params[:file], params[:filename])
 
     if @gpx_log.save
       render json: @gpx_log, status: :created, location: @gpx_log
@@ -46,6 +48,14 @@ class GpxLogsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def gpx_log_params
-      params.require(:gpx_log).permit(:file_name, :file_url)
+      params.require(:gpx_log).permit(:file, :file_name, :file_url)
+    end
+
+    def upload_to_s3(upload_file, file_name)
+      region = ENV['AWS_REGION']
+      bucket = ENV['S3_BUCKET_NAME']
+      client = Aws::S3::Client.new(region: region)
+  
+      client.put_object(bucket: bucket, key: file_name, body: upload_file.read) 
     end
 end
