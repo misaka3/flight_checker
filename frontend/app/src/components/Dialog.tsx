@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { Box, Button, Divider, FormControl, FormControlLabel, Grid, IconButton, List, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Table, TableBody, TableCell, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Button, Divider, FormControl, FormControlLabel, Grid, IconButton, List, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Slider, Table, TableBody, TableCell, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import styles from 'styles/components/dialog.module.css';
 import axios from '../../lib/axiosInstance';
@@ -201,6 +201,22 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
                   </Grid>
                 </Grid>
               </RadioGroup>
+            </div>
+            <Divider className={styles.divider} />
+
+            <div className={styles.listItem}>
+              <Typography variant="h6" gutterBottom>
+                再生速度（秒）
+              </Typography>
+              <Slider
+                aria-label="drawing speed"
+                defaultValue={0.1}
+                valueLabelDisplay="auto"
+                step={0.01}
+                marks
+                min={0.01}
+                max={1.00}
+              />
             </div>
             <Divider className={styles.divider} />
 
