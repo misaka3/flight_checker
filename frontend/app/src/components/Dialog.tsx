@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DialogTitle from '@mui/material/DialogTitle';
 import Dialog, { DialogProps } from '@mui/material/Dialog';
-import { Box, Button, Divider, FormControl, FormControlLabel, Grid, IconButton, List, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Table, TableBody, TableCell, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Button, Divider, FormControl, FormControlLabel, Grid, IconButton, List, MenuItem, Radio, RadioGroup, Select, SelectChangeEvent, Slider, Table, TableBody, TableCell, TableRow, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import styles from 'styles/components/dialog.module.css';
 import axios from '../../lib/axiosInstance';
@@ -12,12 +12,13 @@ interface SimpleDialogProps {
   data?: FlightData;
   string: string;
   onClose: (value: string) => void;
-  onSaveOption: (waypoints: Waypoint[] | [], mapStyle: string) => void;
+  onSaveOption: (waypoints: Waypoint[] | [], mapStyle: string, drawSpeed: number) => void;
   onAreaChange: (e: SelectChangeEvent<number>) => void;
   onAltFlgChange: (newValue: boolean) => void;
   altFlg: boolean;
   areaId: number;
   areas: any[];
+  drawSpeed: number;
 }
 
 interface FlightData {
@@ -28,14 +29,19 @@ interface FlightData {
   maxAltitude: string;
 }
 
-const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose, onSaveOption, onAreaChange, onAltFlgChange, altFlg, areaId, areas }) => {
+const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose, onSaveOption, onAreaChange, onAltFlgChange, altFlg, areaId, areas, drawSpeed }) => {
   const [fullWidth, setFullWidth] = useState(true);
   const [maxWidth, setMaxWidth] = useState<DialogProps['maxWidth']>('md');
   const [file, setFile] = useState<File | null>(null);
   const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
+  const [afterDrawSpeed, setAfterDrawSpeed] = useState<number>(0.1);
 
   const handleStyleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedStyle(event.target.value);
+  };
+
+  const handleAfterDrawSpeedChange = (event: any) => {
+    setAfterDrawSpeed(event.target.value);
   };
 
   const createWaypoint = async (filename: string, data: string) => {
@@ -80,7 +86,7 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
     if (waypoints === undefined) {
       waypoints = [];
     }
-    onSaveOption(waypoints, selectedStyle);
+    onSaveOption(waypoints, selectedStyle, afterDrawSpeed);
   };
 
   const AddWpt = () => {
@@ -143,6 +149,10 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
       reader.readAsText(file);
     });
   };
+  
+  useEffect(() => {
+    setAfterDrawSpeed(drawSpeed);
+  }, [drawSpeed]);
 
   return (
     <Dialog onClose={handleClose} open={open} fullWidth={fullWidth} maxWidth={maxWidth}>
@@ -201,6 +211,24 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
                   </Grid>
                 </Grid>
               </RadioGroup>
+            </div>
+            <Divider className={styles.divider} />
+
+            <div className={styles.listItem}>
+              <Typography variant="h6" gutterBottom>
+                再生速度（秒）
+              </Typography>
+              <Slider
+                aria-label="drawing speed"
+                defaultValue={0.1}
+                valueLabelDisplay="auto"
+                step={0.01}
+                marks
+                min={0.01}
+                max={1.00}
+                value={afterDrawSpeed}
+                onChange={handleAfterDrawSpeedChange} 
+              />
             </div>
             <Divider className={styles.divider} />
 

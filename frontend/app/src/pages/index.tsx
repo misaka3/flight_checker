@@ -32,6 +32,7 @@ const RootPage = () => {
   const [minAltitude, setMinAltitude] = useState(0);
   const [maxAltitude, setMaxAltitude] = useState(0);
   const [selectedStyle, setSelectedStyle] = useState('mapbox://styles/mapbox/streets-v11');
+  const [drawSpeed, setDrawSpeed] = useState<number>(100);
   // layer
   const [layers, setLayers] = useState<any[]>([]);
   const [pzLayers, setPzLayers] = useState<any[]>([]);
@@ -85,7 +86,7 @@ const RootPage = () => {
         geoJSONData_copy[0].geometry.coordinates = geoJSONData[0].geometry.coordinates.slice(0, frameIndex);
         const scatterplot_layer = createScatterplotLayer(geoJSONData_copy, setHoverInfo, altFlg, minAltitude - firstAlt, maxAltitude - firstAlt);
         setNewScatterplotLayer(scatterplot_layer);
-      }, 100);
+      }, drawSpeed);
     }
     return () => clearInterval(timer);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -131,8 +132,9 @@ const RootPage = () => {
     setAreaId(Number(e.target.value));
   };
 
-  const handleSaveOption = async (waypoints: Waypoint[] | [], mapStyle: string) => {
+  const handleSaveOption = async (waypoints: Waypoint[] | [], mapStyle: string, drawSpeed: number) => {
     setSelectedStyle(mapStyle);
+    setDrawSpeed(drawSpeed * 1000);
     let new_layers: any[] = [];
     try {
       // create scatterplot_layer
@@ -340,6 +342,7 @@ const RootPage = () => {
                   altFlg={altFlg}
                   areaId={areaId}
                   areas={areas}
+                  drawSpeed={drawSpeed/1000}
                 />
               </div>
             </Grid>
