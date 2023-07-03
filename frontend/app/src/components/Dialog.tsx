@@ -254,7 +254,10 @@ const SimpleDialog: React.FC<SimpleDialogProps> = ({ open, data, string, onClose
 
             <div className={styles.listItem}>
               <Typography variant="h6" gutterBottom>
-                  高度補正
+                高度補正
+              </Typography>
+              <Typography className={styles.description}>
+                  ※ONにした場合、1つめの高度が0m(map上に描画)となるように補正します
               </Typography>
               <ToggleButtonGroup
                   color="primary"
