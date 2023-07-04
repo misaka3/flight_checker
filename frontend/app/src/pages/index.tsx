@@ -57,10 +57,7 @@ const RootPage = () => {
     setScatterplotFlg(true);
     setCurrentFrameIndex(0);
 
-    let new_layers: any[] = [];
-    if (pzLayers.length > 0) {
-      new_layers = [...pzLayers];
-    }
+    let new_layers = getNewLayers(pzLayers);
     if (wptLayers.length > 0) {
       wptLayers.map(wpt_layer => new_layers.push(wpt_layer));
     }
@@ -232,10 +229,8 @@ const RootPage = () => {
     createGpxLog(file, file.name);
 
     const reader = new FileReader();
-    let new_layers: any[] = [];
-    if (pzLayers.length > 0) {
-      new_layers = [...pzLayers];
-    }
+    
+    let new_layers = getNewLayers(pzLayers);
     reader.onload = (event) => {
       const gpxText = event.target?.result;
       if (typeof gpxText === 'string') {
@@ -266,6 +261,14 @@ const RootPage = () => {
     };
     reader.readAsText(file);
   };
+
+  const getNewLayers = (pzLayers: any[]) => {
+    let new_layers: any[] = [];
+    if (pzLayers.length > 0) {
+      new_layers = [...pzLayers];
+    }
+    return new_layers;
+  }
 
   const handleFlightLogClick = () => {
     console.log('Flight log button clicked');
