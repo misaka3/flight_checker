@@ -270,17 +270,12 @@ const RootPage = () => {
     return new_layers;
   }
 
-  const handleFlightLogClick = () => {
-    console.log('Flight log button clicked');
-  };
-
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = (value: string) => {
     setOpen(false);
-    // setSelectedValue(value);
   };
 
   useEffect(() => {
@@ -336,7 +331,6 @@ const RootPage = () => {
                 </Button>
                 <Dialog
                   open={open}
-                  // data={{ date: "2019-10-31", takeofftime: "06:00:00", landingtime: "06:29:54", flightTime: "29m54s", maxAltitude: "2532ft" }}
                   string={'オプション'}
                   onClose={handleClose}
                   onSaveOption={handleSaveOption}
